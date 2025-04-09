@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.name }} - Profile</title>
+
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #e8eff5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(to bottom, #00c9a7, #8e44ad);
+            color: white;
+            padding: 30px 20px;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 30px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar li {
+            padding: 10px 0;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .sidebar li:hover {
+            opacity: 0.85;
+        }
+
+        .content {
+            flex: 1;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .tab-section {
+            display: none;
+        }
+
+        .tab-section.active {
+            display: block;
+        }
+
+        .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #003366;
+            margin-bottom: 20px;
+        }
+
+        h3.section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #003366;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #003366;
+            padding-bottom: 5px;
+        }
+
+        .info p {
+            margin-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #dee2e6;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f0f5fa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h2>Student Panel</h2>
+        <ul>
+            <li onclick="showTab('profile')">Profile</li>
+            <li onclick="showTab('result')">Result</li>
+            <li onclick="showTab('routine')">Routine</li>
+        </ul>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+
+        <!-- Profile -->
+        <div id="profile" class="tab-section active">
+            <h3 class="section-title">Profile</h3>
+            <img src="{{ student.photo.url }}" alt="Profile Picture" class="profile-pic">
+            <div class="info">
+                <p><strong>Name:</strong> {{ student.name }}</p>
+                <p><strong>Class:</strong> {{ student.student_class }}</p>
+                <p><strong>Section:</strong> {{ student.section }}</p>
+                <p><strong>Faculty:</strong> {{ student.faculty }}</p>
+                <p><strong>Gender:</strong> {{ student.gender }}</p>
+                <p><strong>Date of Birth:</strong> {{ student.dob }}</p>
+                <p><strong>Address:</strong> {{ student.address }}</p>
+                <p><strong>Email:</strong> {{ student.email }}</p>
+                <p><strong>Phone:</strong> {{ student.phone }}</p>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result" class="tab-section">
+            <h3 class="section-title">Result</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Math</td>
+                        <td>89</td>
+                        <td>A</td>
+                    </tr>
+                    <tr>
+                        <td>English</td>
+                        <td>76</td>
+                        <td>B</td>
+                    </tr>
+                    <tr>
+                        <td>Science</td>
+                        <td>92</td>
+                        <td>A+</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Routine -->
+        <div id="routine" class="tab-section">
+            <h3 class="section-title">Routine</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Subjects</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monday</td>
+                        <td>Math, English, Science</td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>History, Computer, PE</td>
+                    </tr>
+                    <tr>
+                        <td>Wednesday</td>
+                        <td>Math, Art, English</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-section');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+    </script>
+
+</body>
+</html>
