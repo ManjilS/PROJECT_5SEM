@@ -21,7 +21,7 @@
         /* background: linear-gradient(-135deg, #c850c0, #4158d0); */
         }
         ::selection{
-        background: #4158d0;
+        background:rgb(125, 166, 20);
         color: #fff;
         }
         .wrapper{
@@ -141,7 +141,7 @@
    <body>
       <div class="wrapper">
          <div class="title">
-            Login Form
+            login form
          </div>
          <form action="{% url 'doLogin' %}" method="POST">
             {% csrf_token %}

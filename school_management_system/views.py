@@ -18,7 +18,7 @@ def doLogin(request):
             auth_login(request, user)  
             user_type = user.user_type
             if user_type == '1':
-                return HttpResponse("This is HOD page")
+                return HttpResponse("This is admin page")
             elif user_type == '2':
                 return HttpResponse("This is Staff page")
             elif user_type == '3':
