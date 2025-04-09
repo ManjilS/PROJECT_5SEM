@@ -3,7 +3,7 @@
 <html lang="en" dir="ltr">
    <head>
       <meta charset="utf-8">
-      <title>Login Form Design | CodeLab</title>
+      <title>School Management System </title>
       <style>
       		@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
         *{
@@ -145,6 +145,18 @@
          </div>
          <form action="{% url 'doLogin' %}" method="POST">
             {% csrf_token %}
+            {% if messages %}
+            {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+               <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+               <div>
+                 {{message}}
+               </div>
+             </div>
+             {% endif %}
+             {% endfor %}
+             {% endif %}
             <div class="field">
                <input type="text" name="email" >
                <label>Email Address</label>
