@@ -16,7 +16,7 @@
             <strong>Welcome</strong>
           </h4>
           <strong>
-            <span style="font-size: 20px; color: #2196F3; font-family: 'Courier New', Courier, monospace;">
+            <span style="font-size: 20px; color:rgb(0, 3, 5); font-family: 'Courier New', Courier, monospace;">
               {{user.first_name}} {{user.last_name}}
             </span>
           </strong>
@@ -107,14 +107,25 @@
     <a href="javascript:void(0);" id="open_msg_box" class="hasnotifications nav-link"><img src="{% static 'assets/img/sidebar/icon-23.png' %}" alt=""> </a>
     </li>
      <li class="nav-item dropdown has-arrow">
-    <a href="#" class=" nav-link user-link" data-toggle="dropdown">
-    <span class="user-img"><img class="rounded-circle" src="{% static 'assets/img/user-06.jpg' %}" width="30" alt="Admin">
-    <span class="status online"></span></span>
-    <strong><span>{{user.first_name}}</span></strong>
+      <a href="#" class="nav-link user-link" data-toggle="dropdown">
+        {% if user.profile_pic and user.profile_pic.url %}
+          <span class="user-img">
+              <img class="rounded-circle" src="{{ user.profile_pic.url }}" width="30" alt="Profile">
+              <span class="status online"></span>
+          </span>
+        {% else %}
+          <span class="user-img">
+              <img class="rounded-circle" src="{% static 'assets/img/noimg.png' %}" width="30" alt="Profile">
+              <span class="status online"></span>
+          </span>
+        {% endif %}
+
+        <strong><span>{{ user.first_name }}</span></strong>
     </a>
+    
     <div class="dropdown-menu">
-    <a class="dropdown-item" href="#">My Profile</a>
-    <a class="dropdown-item" href="#">Edit Profile</a>
+    <a class="dropdown-item" href="{% url 'myprofile' %}">My Profile</a>
+    <a class="dropdown-item" href="{% url 'profile' %}">Edit Profile</a>
     <a class="dropdown-item" href="inbox.html">Settings</a>
     <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
     </div>
@@ -123,7 +134,7 @@
     <div class="dropdown mobile-user-menu float-right"> 
     <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><i class="fas fa-ellipsis-v"></i></a>
     <div class="dropdown-menu dropdown-menu-right">
-    <a class="dropdown-item" href="#">My Profile</a>
+    <a class="dropdown-item" href="">My Profile</a>
     <a class="dropdown-item" href="#">Edit Profile</a>
     <a class="dropdown-item" href="inbox.html">Settings</a>
     <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
