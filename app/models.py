@@ -30,3 +30,17 @@ class session_year(models.Model):
 
     def __str__(self):
         return str(self.session_start_year) + " - " + str(self.session_end_year)
+    
+
+class student(models.Model):
+    admin = models.OneToOneField(CustomUser, on_delete=models.DO_NOTHING)
+    address = models.TextField()
+    gender = models.CharField(max_length=10)
+    phone_number = models.TextField()
+    course_id = models.ForeignKey(course, on_delete=models.DO_NOTHING)
+    session_year_id = models.ForeignKey(session_year, on_delete=models.DO_NOTHING)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+
+    def __str__(self):
+        return str(self.admin.first_name) + " " + str(self.admin.last_name)
