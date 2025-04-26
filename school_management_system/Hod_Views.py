@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import course, session_year, student,CustomUser
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
+
+
+
 @login_required(login_url='/')
 def home(request):
     return render(request, 'Hod/home.html')
@@ -84,3 +88,51 @@ def add_student(request):
         'session_years': session_years,
     }
     return render(request, 'Hod/add_student.html', context)
+def VIEW_STUDENT(request):
+    students = student.objects.all()
+    context = {
+        'students': students,
+    }
+    return render(request, 'Hod/view_student.html', context)
+    
+def edit_student(request, admin_id):
+    student_obj = get_object_or_404(student, admin__id=admin_id)
+    course= course.objects.all()
+    session_years = session_year.objects.all()
+
+    if request.method == "POST":
+        student_obj.admin.first_name = request.POST.get('first_name')
+        student_obj.admin.last_name = request.POST.get('last_name')
+        student_obj.admin.username = request.POST.get('username')
+        student_obj.phone_number = request.POST.get('phone_number')
+        student_obj.address = request.POST.get('address')
+        student_obj.gender = request.POST.get('gender'),
+        course_id = request.POST.get('course')
+        session_year_id = request.POST.get('session_year')
+
+        student_obj.course = course.objects.get(id=course_id)
+        student_obj.session_year = session_year.objects.get(id=session_year_id)
+
+        if request.FILES.get('profile_pic'):
+            student_obj.profile_pic = request.FILES.get('profile_pic')
+
+        student_obj.admin.save()
+        student_obj.save()
+        messages.success(request, "Student updated successfully.")
+        return redirect('view_student')
+
+    context = {
+        'student': student_obj,
+         'course': course,
+        'session_years': session_years
+    }
+    return render(request, 'Hod/edit_student.html', context)
+
+def delete_student(request, admin_id):
+    try:
+        student_obj = student.objects.get(admin__id=admin_id)
+        student_obj.admin.delete()
+        messages.success(request, "Student deleted successfully.")
+    except student.DoesNotExist:
+        messages.error(request, "Student not found.")
+    return redirect('view_student')

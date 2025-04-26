@@ -25,6 +25,9 @@ urlpatterns = [
     path('Hod/home/',Hod_Views.home,name='home'),
     path('Hod/myprofile/',Hod_Views.myprofile,name='myprofile'),
     path('Hod/Student/add',Hod_Views.add_student,name='add_student'),
+    path('Hod/Student/view',Hod_Views.VIEW_STUDENT,name='view_student'),
+    path('Hod/Student/edit/<int:admin_id>/', Hod_Views.edit_student, name='edit_student'),
+    path('Hod/Student/delete/<int:admin_id>/', Hod_Views.delete_student, name='delete_student'),
 
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT) 
 
