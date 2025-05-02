@@ -25,17 +25,19 @@
     <li class="submenu">
     <a href="#"><img src="{% static 'assets/img/sidebar/icon-4.png' %}" alt="icon"> <span> Students</span> <span class="menu-arrow"></span></a>
     <ul class="list-unstyled" style="display: none;">
-    <li><a href=""><span>All Students</span></a></li>
+   
     <li><a href="{% url 'add_student' %}"><span>Add Student</span></a></li>
+    <li><a href="{% url 'view_student' %}"><span>view_student</span></a></li>
+   
    
     </ul>
     </li>
     <li class="submenu">
         <a href="#"><img src="{% static 'assets/img/sidebar/icon-2.png' %}" alt="icon"> <span> Course </span> <span class="menu-arrow"></span></a>
         <ul class="list-unstyled" style="display: none;">
-        <li><a href="#"><span> Course View</span></a></li>
-        <li><a href="#"><span> Course Add </span></a></li>
-        <li><a href="#"><span> Course Edit </span></a></li>
+        <li><a href="{% url 'view_course'%}"><span> Course View</span></a></li>
+        <li><a href="{% url 'add_course' %}"><span> Course Add </span></a></li>
+        
         </ul>
     </li>
     <li class="submenu">
