@@ -16,10 +16,9 @@
     <li class="submenu">
     <a href="#"><img src="{% static 'assets/img/sidebar/icon-2.png' %}" alt="icon"> <span> Teachers</span> <span class="menu-arrow"></span></a>
     <ul class="list-unstyled" style="display: none;">
-    <li><a href="#"><span>All Teachers</span></a></li>
-    <li><a href="#"><span>Add Teacher</span></a></li>
-    <li><a href="#"><span>Edit Teacher</span></a></li>
-    <li><a href="#"><span>About Teacher</span></a></li>
+    <li><a href="{% url 'add_staff'%}"><span>Add Staff</span></a></li>
+    <li><a href="{% url 'view_staff'%}"><span>View Staff</span></a></li>
+    
     </ul>
     </li>
     <li class="submenu">
