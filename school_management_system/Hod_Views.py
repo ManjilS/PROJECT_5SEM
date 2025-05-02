@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from app.models import course, session_year, student,CustomUser
 from django.contrib import messages
+from django.shortcuts import get_object_or_404
+
+
+
 @login_required(login_url='/')
 def home(request):
     return render(request, 'Hod/home.html')
@@ -37,9 +41,11 @@ def add_student(request):
         email = email.lower().strip()
 
         # Validate unique fields
+       
         if CustomUser.objects.filter(email__iexact=email).exists():
             messages.error(request, 'Email already exists')
             return redirect('add_student')
+        
         
         # Normalize username
         username = username.lower().strip()
@@ -76,6 +82,7 @@ def add_student(request):
         )
         students.save()
 
+
         messages.success(request, 'Student added successfully')
         return redirect('add_student')
 
@@ -84,6 +91,7 @@ def add_student(request):
         'session_years': session_years,
     }
     return render(request, 'Hod/add_student.html', context)
+<<<<<<< HEAD
 
 
 def add_staff(request):
@@ -91,3 +99,149 @@ def add_staff(request):
 
 def view_staff(request):
     return render(request, 'Hod/view_staff.html')
+=======
+def VIEW_STUDENT(request):
+    students = student.objects.all()
+    context = {
+        'students': students,
+    }
+    return render(request, 'Hod/view_student.html', context)
+  
+def edit_student(request,id):
+    student_id = student.objects.get(id=id)
+    courses = course.objects.all()
+    session_years = session_year.objects.all()
+    context = {
+        'student': student_id,
+        'courses': courses,
+        'session_years': session_years,
+    }
+    return render(request, 'Hod/edit_student.html',context)
+
+def update_student(request):
+    
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        profile_pic = request.FILES.get('profile_pic')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password') 
+        phone_number = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        gender = request.POST.get('gender') 
+        selected_course_id = request.POST.get('course')  
+        selected_session_year_id = request.POST.get('session_year')
+
+        student_obj = student.objects.get(id=student_id)
+        user = CustomUser.objects.get(id=student_obj.admin.id)
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.username = username
+        
+        if password != " ":
+            user.set_password(password)
+        if profile_pic != " ":
+            user.profile_pic = profile_pic
+
+        user.save()
+        student_obj = student.objects.get(id=student_id)
+        student_obj.address = address
+        student_obj.phone_number = phone_number
+        student_obj.gender=gender
+        courses= course.objects.get(id=selected_course_id)
+        student_obj.course_id=courses
+        session_years= session_year.objects.get(id=selected_session_year_id)
+        student_obj.session_year_id=session_years
+
+        student_obj.save()
+        messages.success(request, 'Student updated successfully')
+        return redirect('view_student')
+
+    return render(request, 'Hod/edit_student.html')
+
+
+def delete_student(request, admin):
+    user = CustomUser.objects.get(id=admin)
+    try:
+        # Delete the related student object first
+        student_obj = student.objects.get(admin=user)
+        student_obj.delete()
+        # Then delete the user
+        user.delete()
+        messages.success(request, 'Student deleted successfully')
+    except student.DoesNotExist:
+        messages.error(request, 'Student record not found')
+    except Exception as e:
+        messages.error(request, f'Error occurred: {str(e)}')
+    return redirect('view_student')
+
+
+def add_course(request):
+    if request.method == 'POST':
+        course_name = request.POST.get('course_name')
+        course_code = request.POST.get('course_code')
+
+        # Check if the course already exists
+        if course.objects.filter(course_name__iexact=course_name).exists():
+            messages.error(request, 'Course with this name already exists')
+            return redirect('add_course')
+
+        if course.objects.filter(course_code__iexact=course_code).exists():
+            messages.error(request, 'Course with this code already exists')
+            return redirect('add_course')
+
+        if not course_code:
+            messages.error(request, 'Course code is required')
+            return redirect('add_course')
+
+        course_obj = course(
+            course_name=course_name,
+            course_code=course_code
+        )
+        course_obj.save()
+        messages.success(request, 'Course added successfully')
+        return redirect('add_course')
+    context = {}    
+    return render(request, 'Hod/add_course.html', context)
+
+def view_course(request):
+    courses = course.objects.all()
+    context = {
+        'courses': courses,
+    }
+    return render(request, 'Hod/view_course.html', context)
+
+
+
+
+def edit_course(request,id):
+    course_id = course.objects.get(id=id)
+    context = {
+        'course': course_id,
+    }
+    return render(request, 'Hod/edit_course.html',context)
+
+def update_course(request):
+    if request.method == 'POST':
+        course_id = request.POST.get('course_id')
+        course_name = request.POST.get('course_name')
+        course_code = request.POST.get('course_code')
+
+        course_obj = course.objects.get(id=course_id)
+        course_obj.course_name = course_name
+        course_obj.course_code = course_code
+        course_obj.save()
+        messages.success(request, 'Course updated successfully')
+        return redirect('view_course')
+
+    return render(request, 'Hod/edit_course.html')
+
+def delete_course(request, id):
+    course_obj = course.objects.get(id=id)
+    course_obj.delete()
+    messages.success(request, 'Course deleted successfully')
+    return redirect('view_course')
+>>>>>>> 1dd7f445faf42a76f73e1b53b582e22e1141aa16
