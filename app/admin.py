@@ -9,3 +9,5 @@ admin.site.register(CustomUser,UserModel)
 admin.site.register(course)
 admin.site.register(session_year)
 admin.site.register(student)
+admin.site.register(Staff)
+

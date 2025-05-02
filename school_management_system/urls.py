@@ -14,6 +14,11 @@ urlpatterns = [
     path('doLogin/',views.doLogin,name='doLogin'),
     path('doLogout/',views.doLogout,name='logout'),
 
+
+    path('Hod/Staff/Add',Hod_Views.add_staff,name='add_staff'),
+    path('Hod/Staff/View',Hod_Views.view_staff,name='view_staff'),
+
+
    
     
 

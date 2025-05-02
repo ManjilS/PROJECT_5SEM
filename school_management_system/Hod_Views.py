@@ -84,3 +84,10 @@ def add_student(request):
         'session_years': session_years,
     }
     return render(request, 'Hod/add_student.html', context)
+
+
+def add_staff(request):
+    return render(request, 'Hod/add_staff.html')
+
+def view_staff(request):
+    return render(request, 'Hod/view_staff.html')
