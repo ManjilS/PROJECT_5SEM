@@ -91,7 +91,6 @@ def add_student(request):
         'session_years': session_years,
     }
     return render(request, 'Hod/add_student.html', context)
-<<<<<<< HEAD
 
 
 def add_staff(request):
@@ -99,7 +98,6 @@ def add_staff(request):
 
 def view_staff(request):
     return render(request, 'Hod/view_staff.html')
-=======
 def VIEW_STUDENT(request):
     students = student.objects.all()
     context = {
@@ -244,4 +242,3 @@ def delete_course(request, id):
     course_obj.delete()
     messages.success(request, 'Course deleted successfully')
     return redirect('view_course')
->>>>>>> 1dd7f445faf42a76f73e1b53b582e22e1141aa16

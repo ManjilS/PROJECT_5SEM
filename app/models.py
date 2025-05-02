@@ -32,7 +32,7 @@ class session_year(models.Model):
         return str(self.session_start_year) + " - " + str(self.session_end_year)
     
 
-class staff(models.Model):
+class Staff(models.Model):
     admin = models.OneToOneField(CustomUser, on_delete=models.DO_NOTHING)
     address = models.TextField()
     gender = models.CharField(max_length=10)
@@ -59,13 +59,4 @@ class student(models.Model):
         return str(self.admin.first_name) + " " + str(self.admin.last_name)
     
 
-class Staff(models.Model):
-    admin = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    address = models.TextField()
-    gender = models.CharField(max_length=100)
-    created_at = models.DateField(auto_now_add=True)
-    phone_number = models.TextField()
-    updated_at = models.DateField(auto_now=True)
 
-    def __str__(self):
-       return self.sdmin.username 

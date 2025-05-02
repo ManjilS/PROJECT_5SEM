@@ -4,7 +4,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .import views,Hod_Views,Student_Views,Staff_Views
+from school_management_system import views, Hod_Views, Student_Views, Staff_Views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('base/',views.base,name='base'),
@@ -15,8 +15,8 @@ urlpatterns = [
     path('doLogout/',views.doLogout,name='logout'),
 
 
-    path('Hod/Staff/Add',Hod_Views.add_staff,name='add_staff'),
-    path('Hod/Staff/View',Hod_Views.view_staff,name='view_staff'),
+    path('Hod/staff/Add',Hod_Views.add_staff,name='add_staff'),
+    path('Hod/staff/View',Hod_Views.view_staff,name='view_staff'),
 
 
    
