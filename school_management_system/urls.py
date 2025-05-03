@@ -26,8 +26,16 @@ urlpatterns = [
     path('Hod/myprofile/',Hod_Views.myprofile,name='myprofile'),
     path('Hod/Student/add',Hod_Views.add_student,name='add_student'),
     path('Hod/Student/view',Hod_Views.VIEW_STUDENT,name='view_student'),
-    path('Hod/Student/edit/<int:admin_id>/', Hod_Views.edit_student, name='edit_student'),
-    path('Hod/Student/delete/<int:admin_id>/', Hod_Views.delete_student, name='delete_student'),
-
+    path('Hod/Student/edit/<str:id>',Hod_Views.edit_student,name='edit_student'),
+    path('Hod/Student/update',Hod_Views.update_student,name='update_student'),
+    path('Hod/Student/delete/<str:admin>',Hod_Views.delete_student,name='delete_student'),
+    
+    
+    path('Hod/Course/add',Hod_Views.add_course,name='add_course'),
+    path('Hod/Course/view',Hod_Views.view_course,name='view_course'),
+    path('Hod/Course/edit/<str:id>',Hod_Views.edit_course,name='edit_course'),
+    path('Hod/Course/update',Hod_Views.update_course,name='update_course'),
+    path('Hod/Course/delete/<str:id>',Hod_Views.delete_course,name='delete_course'),
+    
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT) 
 
