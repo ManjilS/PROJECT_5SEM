@@ -37,7 +37,7 @@ class staff(models.Model):
     address = models.TextField()
     gender = models.CharField(max_length=10)
     phone_number = models.TextField()
-    course_id = models.ForeignKey("course", on_delete=models.DO_NOTHING,null=True, blank=True)
+    
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     

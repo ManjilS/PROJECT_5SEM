@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, student,CustomUser
+from app.models import course, session_year, student,CustomUser,staff
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -20,7 +20,7 @@ def myprofile(request):
 
 @login_required(login_url='/')
 def add_student(request):
-    # Ensure model names start with capital letters: Course, SessionYear, Student
+    
     courses = course.objects.all()
     session_years = session_year.objects.all()
 
@@ -91,6 +91,13 @@ def add_student(request):
         'session_years': session_years,
     }
     return render(request, 'Hod/add_student.html', context)
+
+
+def add_staff(request):
+    return render(request, 'Hod/add_staff.html')
+
+def view_staff(request):
+    return render(request, 'Hod/view_staff.html')
 def VIEW_STUDENT(request):
     students = student.objects.all()
     context = {
@@ -235,3 +242,128 @@ def delete_course(request, id):
     course_obj.delete()
     messages.success(request, 'Course deleted successfully')
     return redirect('view_course')
+
+
+
+
+def add_staff(request):
+    if request.method == 'POST':
+        profile_pic = request.FILES.get('profile_pic')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password') 
+
+        phone_number = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        gender = request.POST.get('gender')
+
+    # Normalize email   
+        email = email.lower().strip()
+            # Normalize username
+        username = username.lower().strip()
+
+        if CustomUser.objects.filter(email__iexact=email).exists():
+            messages.error(request, 'Email already exists')
+            return redirect('add_staff')
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, 'Username already exists')
+            return redirect('add_staff')
+        
+    
+        user=CustomUser(
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            username=username,    
+            
+            profile_pic=profile_pic,
+            user_type=2,
+        )
+        user.set_password(password)
+        user.save()
+
+        staff_obj=staff(
+            admin=user,
+            address=address,
+            phone_number=phone_number,
+            gender=gender
+        )
+        staff_obj.save()
+        messages.success(request, 'Staff added successfully')
+        return redirect('add_staff')
+
+    return render(request, 'Hod/add_staff.html')
+
+
+
+def view_staff(request):
+    staff_members = staff.objects.all()
+    context = {
+        'staff_members': staff_members,
+    }
+
+    return render(request, 'Hod/view_staff.html',context)
+
+
+
+def edit_staff(request,id):
+    staff_id = staff.objects.get(id=id)
+    context = {
+        'staff': staff_id,
+    }
+    return render(request, 'Hod/edit_staff.html',context)
+
+def update_staff(request):
+    if request.method == 'POST':
+        staff_id = request.POST.get('staff_id')
+        profile_pic = request.FILES.get('profile_pic')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password') 
+        phone_number = request.POST.get('phone_number')
+        address = request.POST.get('address')
+        gender = request.POST.get('gender')
+        staff_obj = staff.objects.get(id=staff_id)
+        user=CustomUser.objects.get(id=staff_obj.admin.id)
+        
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        user.username = username
+        
+        if password != " ":
+            user.set_password(password)
+        if profile_pic != " ":
+            user.profile_pic = profile_pic
+
+        user.save()
+
+        staff_obj = staff.objects.get(id=staff_id)
+        staff_obj.address = address
+        staff_obj.phone_number = phone_number
+        staff_obj.gender=gender
+
+        staff_obj.save()
+        messages.success(request, 'Staff updated successfully')
+        return redirect('view_staff')
+    return render(request, 'Hod/edit_staff.html')
+
+
+def delete_staff(request, admin):
+    user = CustomUser.objects.get(id=admin)
+    try:
+        # Delete the related staff object first
+        staff_obj = staff.objects.get(admin=user)
+        staff_obj.delete()
+        # Then delete the user
+        user.delete()
+        messages.success(request, 'Staff deleted successfully')
+    except staff.DoesNotExist:
+        messages.error(request, 'Staff record not found')
+    except Exception as e:
+        messages.error(request, f'Error occurred: {str(e)}')
+    return redirect('view_staff')
