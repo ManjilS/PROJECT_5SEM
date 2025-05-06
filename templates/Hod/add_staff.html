@@ -90,31 +90,7 @@
 
   <div class="container">
     <h2>Add Staff</h2>
-    {% if messages %}
-            {% for message in messages %}
-            {% if message.tags == 'error' %}
-            <div class="alert alert-danger d-flex align-items-center" role="alert">
-               <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-               <div>
-                 {{message}}
-               </div>
-             </div>
-             {% endif %}
-             {% endfor %}
-             {% endif %}
-
-     {% if messages %}
-             {% for message in messages %}
-             {% if message.tags == 'success' %}
-             <div class="alert alert-danger d-flex align-items-center" role="alert">
-                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                <div>
-                  {{message}}
-                </div>
-              </div>
-              {% endif %}
-              {% endfor %}
-              {% endif %}
+    {% include 'includes/messages.html' %}
     <form method="POST" action="{% url 'add_staff' %}" enctype="multipart/form-data">
         {% csrf_token %}
       <label for="profile_pic">Profile Pic</label>

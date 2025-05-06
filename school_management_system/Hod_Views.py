@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, student,CustomUser,staff
+from app.models import course, session_year, student,CustomUser,staff,subject
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -367,3 +367,42 @@ def delete_staff(request, admin):
     except Exception as e:
         messages.error(request, f'Error occurred: {str(e)}')
     return redirect('view_staff')
+
+
+def add_subject(request):
+    courses = course.objects.all()
+    staff_members = staff.objects.all()
+
+    if request.method == 'POST':
+        subject_name = request.POST.get('subject_name')
+        subject_code = request.POST.get('subject_code')
+        selected_course_id = request.POST.get('course_id')  
+        selected_staff_id = request.POST.get('staff_id')
+
+        
+        course_obj = course.objects.get(id=selected_course_id)
+        staff_obj = staff.objects.get(id=selected_staff_id)
+
+        subject_obj = subject(
+            subject_name=subject_name,
+            subject_code=subject_code,
+            course_id=course_obj,
+            staff_id=staff_obj
+        )
+        subject_obj.save()
+        messages.success(request, 'Subject added successfully')
+        return redirect('add_subject')
+
+    context = {
+        'courses': courses,
+        'staff_members': staff_members,
+    }
+    return render(request, 'Hod/add_subject.html', context)
+
+def view_subject(request):
+
+    subject_obj = subject.objects.all()
+    context = {
+        'subject_obj': subject_obj,
+    }
+    return render(request, 'Hod/view_subject.html',context)
