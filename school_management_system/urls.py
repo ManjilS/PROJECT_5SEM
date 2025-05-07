@@ -64,5 +64,5 @@ urlpatterns = [
     path('Hod/Session/update',Hod_Views.update_session,name='update_session'),
     path('Hod/Session/delete/<str:id>',Hod_Views.delete_session,name='delete_session'),
     
->>>>>>> 95059ef0b626dafb79b3b7a2c9da2f51e49f9431
+95059ef0b626dafb79b3b7a2c9da2f51e49f9431>>>>>>> 
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
