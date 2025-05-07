@@ -64,7 +64,7 @@ class subject(models.Model):
     course_id = models.ForeignKey(course, on_delete=models.CASCADE)
     staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
     
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True,null=True)
     updated_at = models.DateField(auto_now=True)
     
     def __str__(self):

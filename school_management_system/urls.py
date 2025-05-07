@@ -51,5 +51,14 @@ urlpatterns = [
 
     path('Hod/Subject/add',Hod_Views.add_subject,name='add_subject'),
     path('Hod/Subject/view',Hod_Views.view_subject,name='view_subject'),
-] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT) 
+    path('Hod/Subject/edit/<str:id>',Hod_Views.edit_subject,name='edit_subject'),
+    path('Hod/Subject/update',Hod_Views.update_subject,name='update_subject'),
+    path('Hod/Subject/delete/<str:id>',Hod_Views.delete_subject,name='delete_subject'),
 
+    path('Hod/Session/add',Hod_Views.add_session,name='add_session'),
+    path('Hod/Session/view',Hod_Views.view_session,name='view_session'),
+    path('Hod/Session/edit/<str:id>',Hod_Views.edit_session,name='edit_session'),
+    path('Hod/Session/update',Hod_Views.update_session,name='update_session'),
+    path('Hod/Session/delete/<str:id>',Hod_Views.delete_session,name='delete_session'),
+    
+] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

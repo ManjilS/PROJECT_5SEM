@@ -49,9 +49,8 @@
     <li class="submenu">
         <a href="#"><img src="{% static 'assets/img/sidebar/icon-2.png' %}" alt="icon"> <span> Session </span> <span class="menu-arrow"></span></a>
         <ul class="list-unstyled" style="display: none;">
-        <li><a href="#"><span> Session View</span></a></li>
-        <li><a href="#"><span> Session Add </span></a></li>
-        <li><a href="#"><span> Session Edit </span></a></li>
+        <li><a href="{%url 'view_session'%}"><span> Session View</span></a></li>
+        <li><a href="{% url 'add_session' %}"><span> Session Add </span></a></li>
         </ul>
     </li>
     <li>

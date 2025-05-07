@@ -406,3 +406,100 @@ def view_subject(request):
         'subject_obj': subject_obj,
     }
     return render(request, 'Hod/view_subject.html',context)
+
+def edit_subject(request,id):
+    subject_id = subject.objects.get(id=id)
+    courses = course.objects.all()
+    staff_members = staff.objects.all()
+    context = {
+        'subject': subject_id,
+        'courses': courses,
+        'staff_members': staff_members,
+    }
+    return render(request, 'Hod/edit_subject.html',context)
+
+def update_subject(request):
+    if request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        subject_name = request.POST.get('subject_name')
+        subject_code = request.POST.get('subject_code')
+        selected_course_id = request.POST.get('course_id')
+        selected_staff_id = request.POST.get('staff_id')
+
+        course_obj = course.objects.get(id=selected_course_id)
+        staff_obj = staff.objects.get(id=selected_staff_id)
+
+        subject_obj = subject(
+            id=subject_id,
+            subject_name=subject_name,
+            subject_code=subject_code,
+            course_id=course_obj,
+            staff_id=staff_obj
+
+        )
+        subject_obj.save()
+        messages.success(request, 'Subject updated successfully')
+        
+    return redirect('view_subject')
+
+def delete_subject(request, id):
+    subject_obj = subject.objects.get(id=id)
+    subject_obj.delete()    
+    messages.success(request, 'Subject deleted successfully')
+    return redirect('view_subject')
+
+
+def add_session(request):
+    if request.method == 'POST':
+        session_start_year = request.POST.get('start_date')
+        session_end_year = request.POST.get('end_date')
+
+        # Check if the session year already exists
+        if session_year.objects.filter(session_start_year=session_start_year, session_end_year=session_end_year).exists():
+            messages.error(request, 'Session year already exists')
+            return redirect('add_session')
+
+        session_obj = session_year(
+            session_start_year=session_start_year,
+            session_end_year=session_end_year
+        )
+        session_obj.save()
+        messages.success(request, 'Session year added successfully')
+        return redirect('add_session')
+    return render(request, 'Hod/add_session.html')
+
+def view_session(request):
+    session_years = session_year.objects.all()
+    context = {
+        'session_years': session_years,
+    }
+    return render(request, 'Hod/view_session.html', context)
+
+
+def edit_session(request,id):
+    session_obj = session_year.objects.get(id=id)
+    context = {
+        'session': session_obj,
+    }
+    return render(request, 'Hod/edit_session.html',context)
+
+def update_session(request):
+    if request.method == 'POST':
+        session_id = request.POST.get('session_id')
+        session_start_year = request.POST.get('start_date')
+        session_end_year = request.POST.get('end_date')
+
+        session_obj = session_year.objects.get(id=session_id)
+        session_obj.session_start_year = session_start_year
+        session_obj.session_end_year = session_end_year
+        session_obj.save()
+        messages.success(request, 'Session updated successfully')
+        return redirect('view_session')
+
+    return render(request, 'Hod/edit_session.html')
+
+def delete_session(request, id):
+    session_obj = session_year.objects.get(id=id)
+    session_obj.delete()
+    messages.success(request, 'Session deleted successfully')
+    return redirect('view_session')
