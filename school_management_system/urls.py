@@ -17,6 +17,8 @@ urlpatterns = [
     path('Hod/staff/Add',Hod_Views.add_staff,name='add_staff'),
     path('Hod/staff/View',Hod_Views.view_staff,name='view_staff'),
 
+    path('student/home/',Student_Views.Student_home,name='student_home'),
+
 
    
     
