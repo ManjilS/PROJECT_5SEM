@@ -57,3 +57,15 @@ class student(models.Model):
 
     def __str__(self):
         return str(self.admin.first_name) + " " + str(self.admin.last_name)
+
+class subject(models.Model):
+    subject_name = models.CharField(max_length=100)
+    subject_code = models.CharField(max_length=10)
+    course_id = models.ForeignKey(course, on_delete=models.CASCADE)
+    staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
+    
+    created_at = models.DateField(auto_now_add=True,null=True)
+    updated_at = models.DateField(auto_now=True)
+    
+    def __str__(self):
+        return str(self.subject_name) + " - " + str(self.course_id)
