@@ -1,186 +1,63 @@
 <!DOCTYPE html>
-<!-- Created By CodingNepal -->
-<html lang="en" dir="ltr">
+{% load static %}
+<html lang="en">
+   <!-- Mirrored from preschool.dreamguystech.com/html-template/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:39 GMT -->
    <head>
       <meta charset="utf-8">
-      <title>School Management System </title>
-      <style>
-      		@import url('https://fonts.googleapis.com/css?family=Poppins:400,500,600,700&display=swap');
-        *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Poppins', sans-serif;
-        }
-        html,body{
-        display: grid;
-        height: 100%;
-        width: 100%;
-        place-items: center;
-        background: #f2f2f2;
-        /* background: linear-gradient(-135deg, #c850c0, #4158d0); */
-        }
-        ::selection{
-        background: #4158d0;
-        color: #fff;
-        }
-        .wrapper{
-        width: 380px;
-        background: #fff;
-        border-radius: 15px;
-        box-shadow: 0px 15px 20px rgba(0,0,0,0.1);
-        }
-        .wrapper .title{
-        font-size: 35px;
-        font-weight: 600;
-        text-align: center;
-        line-height: 100px;
-        color: #fff;
-        user-select: none;
-        border-radius: 15px 15px 0 0;
-        background: linear-gradient(-135deg, #c850c0, #4158d0);
-        }
-        .wrapper form{
-        padding: 10px 30px 50px 30px;
-        }
-        .wrapper form .field{
-        height: 50px;
-        width: 100%;
-        margin-top: 20px;
-        position: relative;
-        }
-        .wrapper form .field input{
-        height: 100%;
-        width: 100%;
-        outline: none;
-        font-size: 17px;
-        padding-left: 20px;
-        border: 1px solid lightgrey;
-        border-radius: 25px;
-        transition: all 0.3s ease;
-        }
-        .wrapper form .field input:focus,
-        form .field input:valid{
-        border-color: #4158d0;
-        }
-        .wrapper form .field label{
-        position: absolute;
-        top: 50%;
-        left: 20px;
-        color: #999999;
-        font-weight: 400;
-        font-size: 17px;
-        pointer-events: none;
-        transform: translateY(-50%);
-        transition: all 0.3s ease;
-        }
-        form .field input:focus ~ label,
-        form .field input:valid ~ label{
-        top: 0%;
-        font-size: 16px;
-        color: #4158d0;
-        background: #fff;
-        transform: translateY(-50%);
-        }
-        form .content{
-        display: flex;
-        width: 100%;
-        height: 50px;
-        font-size: 16px;
-        align-items: center;
-        justify-content: space-around;
-        }
-        form .content .checkbox{
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        }
-        form .content input{
-        width: 15px;
-        height: 15px;
-        background: red;
-        }
-        form .content label{
-        color: #262626;
-        user-select: none;
-        padding-left: 5px;
-        }
-        form .content .pass-link{
-        color: "";
-        }
-        form .field input[type="submit"]{
-        color: #fff;
-        border: none;
-        padding-left: 0;
-        margin-top: -10px;
-        font-size: 20px;
-        font-weight: 500;
-        cursor: pointer;
-        background: linear-gradient(-135deg, #c850c0, #4158d0);
-        transition: all 0.3s ease;
-        }
-        form .field input[type="submit"]:active{
-        transform: scale(0.95);
-        }
-        form .signup-link{
-        color: #262626;
-        margin-top: 20px;
-        text-align: center;
-        }
-        form .pass-link a,
-        form .signup-link a{
-        color: #4158d0;
-        text-decoration: none;
-        }
-        form .pass-link a:hover,
-        form .signup-link a:hover{
-        text-decoration: underline;
-        }
-      </style>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+      <title>Preskool - Login</title>
+      <link rel="shortcut icon" href="{% static 'assets/img/favicon.png' %}">
+      <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap' %}">
+      <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
+      <link rel="stylesheet" href="{% static 'assets/css/style.css' %}">
    </head>
    <body>
-      <div class="wrapper">
-         <div class="title">
-            Login Form
+      <div class="main-wrapper login-body">
+         <div class="login-wrapper">
+            <div class="container">
+               <div class="loginbox">
+
+                  <div class="login-left">
+                     <img class="img-fluid" src="{% static 'assets/img/logo-white.png' %}" alt="Logo">
+                  </div>
+                  <div class="login-right">
+                     <div class="login-right-wrap">
+                        <h1>Login</h1>
+                        <p class="account-subtitle">Access to our dashboard</p>
+                        <form action="{% url 'doLogin'%}" method="post">
+                           {% csrf_token %}
+                           <div class="form-group">
+                              <input class="form-control" type="text" placeholder="Email" required>
+                           </div>
+                           <div class="form-group">
+                              <input class="form-control" type="text" placeholder="Password" required>
+                           </div>
+                           <div class="form-group">
+                              <button class="btn btn-primary btn-block" type="submit">Login</button>
+                           </div>
+                        </form>
+                        <div class="text-center forgotpass"><a href="forgot-password.html">Forgot Password?</a></div>
+                        <div class="login-or">
+                           <span class="or-line"></span>
+                           <span class="span-or">or</span>
+                        </div>
+                        <div class="social-login">
+                           <span>Login with</span>
+                           <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a><a href="#" class="google"><i class="fab fa-google"></i></a>
+                        </div>
+                        <div class="text-center dont-have">Don’t have an account? <a href="register.html">Register</a></div>
+                     </div>
+                  </div>
+               </div>
+            </div>
          </div>
-         <form action="{% url 'doLogin' %}" method="POST">
-            {% csrf_token %}
-            {% if messages %}
-            {% for message in messages %}
-            {% if message.tags == 'error' %}
-            <div class="alert alert-danger d-flex align-items-center" role="alert">
-               <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-               <div>
-                 {{message}}
-               </div>
-             </div>
-             {% endif %}
-             {% endfor %}
-             {% endif %}
-            <div class="field">
-               <input type="text" name="email" >
-               <label>Email Address</label>
-            </div>
-            <div class="field">
-               <input type="password" name="password" >
-               <label>Password</label>
-            </div>
-            <div class="content">
-               <div class="checkbox">
-                  <input type="checkbox" id="remember-me">
-                  <label for="remember-me">Remember me</label>
-               </div>
-               <div class="pass-link">
-                  <a href="#">Forgot password?</a>
-               </div>
-            </div>
-            <div class="field">
-               <input type="submit" value="Login">
-            </div>
-            <div class="signup-link">
-               Not a member? <a href="#">Signup now</a>
-            </div>
-         </form>
       </div>
+      <script src="assets/js/jquery-3.6.0.min.js"></script>
+      <script src="assets/js/popper.min.js"></script>
+      <script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+      <script src="assets/js/script.js"></script>
    </body>
+   <!-- Mirrored from preschool.dreamguystech.com/html-template/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 28 Oct 2021 11:11:40 GMT -->
 </html>

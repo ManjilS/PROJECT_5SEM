@@ -17,10 +17,13 @@ urlpatterns = [
     path('Hod/staff/Add',Hod_Views.add_staff,name='add_staff'),
     path('Hod/staff/View',Hod_Views.view_staff,name='view_staff'),
 
+
+    #Student path
     path('student/home/',Student_Views.Student_home,name='student_home'),
 
 
-   
+   #Staff Path
+   path('staff/home/',Staff_Views.Staff_home,name='staff_home'),
     
 
     #profile update
@@ -49,8 +52,7 @@ urlpatterns = [
     path('Hod/Course/update',Hod_Views.update_course,name='update_course'),
     path('Hod/Course/delete/<str:id>',Hod_Views.delete_course,name='delete_course'),
     
-<<<<<<< HEAD
-=======
+
 
     path('Hod/Subject/add',Hod_Views.add_subject,name='add_subject'),
     path('Hod/Subject/view',Hod_Views.view_subject,name='view_subject'),
@@ -64,5 +66,5 @@ urlpatterns = [
     path('Hod/Session/update',Hod_Views.update_session,name='update_session'),
     path('Hod/Session/delete/<str:id>',Hod_Views.delete_session,name='delete_session'),
     
-95059ef0b626dafb79b3b7a2c9da2f51e49f9431>>>>>>> 
+
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

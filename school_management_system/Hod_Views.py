@@ -8,7 +8,23 @@ from django.shortcuts import get_object_or_404
 
 @login_required(login_url='/')
 def home(request):
-    return render(request, 'Hod/home.html')
+    student_count = student.objects.all().count()
+    staff_count = staff.objects.all().count()
+    course_count = course.objects.all().count()
+    subject_count = subject.objects.all().count()
+    male_student_count = student.objects.filter(gender='M').count()
+    female_student_count = student.objects.filter(gender='F').count()
+
+    context = {
+        'student_count': student_count,
+        'staff_count': staff_count,
+        'course_count': course_count,
+        'subject_count': subject_count,
+        'male_student_count': male_student_count,
+        'female_student_count': female_student_count,
+    }
+    
+    return render(request, 'Hod/home.html', context)
 
 @login_required(login_url='/')
 def myprofile(request):
