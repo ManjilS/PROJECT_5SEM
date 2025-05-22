@@ -69,3 +69,24 @@ class subject(models.Model):
     
     def __str__(self):
         return str(self.subject_name) + " - " + str(self.course_id)
+
+class staff_notification(models.Model):
+    staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateField(auto_now_add=True)
+    status = models.IntegerField(null=True,default=0)
+    
+    def __str__(self):
+        return str(self.staff_id.admin.first_name) 
+    
+class staff_leave(models.Model):
+    staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
+    leave_start_date = models.DateField()
+    leave_end_date = models.DateField()
+    leave_message = models.TextField()
+    leave_status = models.IntegerField(null=True,default=0)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    
+    def __str__(self):
+        return str(self.staff_id.admin.first_name) + " " + str(self.leave_start_date) + " - " + str(self.leave_end_date)

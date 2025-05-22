@@ -1,43 +1,77 @@
 {%extends 'base.html'%}
 {%load static%}
 {%block content%}
-<br>
- <div class="row">
-    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-    <div class="dash-widget dash-widget5">
-<span class="float-left"><img src="{% static 'assets/img/dash/dash-1.png' %}" alt="" class="dash-widget-img"></span>
-    <div class="dash-widget-info text-right">
-    <span>Students</span>
-    <h3>10</h3>
-    </div>
-    </div>
-    </div>
-    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-    <div class="dash-widget dash-widget5">
-    <div class="dash-widget-info text-left d-inline-block">
-    <span>Teachers</span>
-    <h3>10</h3>
-    </div>
-    <span class="float-right"><img src="{% static 'assets/img/dash/dash-2.png' %}" width="80" alt="" class="dash-widget-img"></span>
-    </div>
-    </div>
-    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-    <div class="dash-widget dash-widget5">
-    <span class="float-left"><img src="{% static 'assets/img/dash/dash-3.png' %} " alt="" width="80"></span>
-    <div class="dash-widget-info text-right">
-    <span>Course</span>
-    <h3>10</h3>
-    </div>
-    </div>
-    </div>
-    <div class="col-md-6 col-sm-6 col-lg-6 col-xl-3">
-    <div class="dash-widget dash-widget5">
-    <div class="dash-widget-info d-inline-block text-left">
-    <span>Subject</span>
-    <h3>10</h3>
-    </div>
-    <span class="float-right"><img src="{% static 'assets/img/dash/dash-4.png' %}" alt="" width="80" class="dash-widget-img"></span>
-    </div>
-    </div>
-    </div>
+
+ <div class="page-header">
+                  <div class="row">
+                     <div class="col-sm-12">
+                        <h3 class="page-title">Welcome !</h3>
+                        <ul class="breadcrumb">
+                           <li class="breadcrumb-item active">Dashboard</li>
+                        </ul>
+                     </div>
+                  </div>
+               </div>
+               <div class="row">
+                  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                     <div class="card bg-one w-100">
+                        <div class="card-body">
+                           <div class="db-widgets d-flex justify-content-between align-items-center">
+                              <div class="db-icon">
+                                 <i class="fas fa-user-graduate"></i>
+                              </div>
+                              <div class="db-info">
+                                 <h3>{{student_count}}</h3>
+                                 <h6>Students</h6>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                     <div class="card bg-two w-100">
+                        <div class="card-body">
+                           <div class="db-widgets d-flex justify-content-between align-items-center">
+                              <div class="db-icon">
+                                 <i class="fas fa-crown"></i>
+                              </div>
+                              <div class="db-info">
+                                 <h3>{{staff_count}}</h3>
+                                 <h6>Staff</h6>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                     <div class="card bg-three w-100">
+                        <div class="card-body">
+                           <div class="db-widgets d-flex justify-content-between align-items-center">
+                              <div class="db-icon">
+                                 <i class="fas fa-building"></i>
+                              </div>
+                              <div class="db-info">
+                                 <h3>{{course_count}}</h3>
+                                 <h6>Course</h6>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-xl-3 col-sm-6 col-12 d-flex">
+                     <div class="card bg-four w-100">
+                        <div class="card-body">
+                           <div class="db-widgets d-flex justify-content-between align-items-center">
+                              <div class="db-icon">
+                                 <i class="fas fa-file-invoice-dollar"></i>
+                              </div>
+                              <div class="db-info">
+                                 <h3>{{subject_count}}</h3>
+                                 <h6>Subject</h6>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
 {%endblock%}

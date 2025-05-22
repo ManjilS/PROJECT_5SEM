@@ -50,6 +50,12 @@
                         <a href="holiday.html"><i class="fas fa-holly-berry"></i> <span>View Attendance</span></a>
                      </li>
                      <li>
+                        <a href="{% url 'send_staff_notification' %}"><i class="fas fa-holly-berry"></i> <span>Send Satff Notification</span></a>
+                     </li>
+                     <li>
+                        <a href="holiday.html"><i class="fas fa-holly-berry"></i> <span>Send Student Notification</span></a>
+                     </li>
+                     <li>
                         <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Student Feedback</span></a>
                      </li>
                      <li>
@@ -59,7 +65,7 @@
                         <a href="event.html"><i class="fas fa-calendar-day"></i> <span>Student Leave</span></a>
                      </li>
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Staff Leave</span></a>
+                        <a href={% url 'view_staff_leave' %}><i class="fas fa-table"></i> <span>Staff Leave</span></a>
                      </li>
                      <li>
                         <a href={%url 'logout' %}><i class="fas fa-table"></i> <span>Log out</span></a>
@@ -86,12 +92,15 @@
                            <li><a href="edit-subject.html">Result Edit</a></li>
                         </ul>
                      </li>
-                  <li>
-                        <a href="exam.html"><i class="fas fa-clipboard-list"></i> <span>Staff Feedback</span></a>
-                     </li>
-                     
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Staff Leave</span></a>
+                        <a href="exam.html"><i class="fas fa-clipboard-list"></i> <span>Send Feedback</span></a>
+                     </li>
+                     <li>
+                        <a href="{% url 'staff_notification' %}"><i class="fas fa-bell"></i> <span>Notifications</span></a>
+                     </li>
+
+                     <li>
+                        <a href={% url 'staff_apply_leave'%}><i class="fas fa-table"></i> <span>Apply for Leave</span></a>
                      </li>
                      <li>
                         <a href={%url 'logout' %}><i class="fas fa-table"></i> <span>Log out</span></a>
@@ -110,10 +119,10 @@
                         <a href="time-table.html"><i class="fas fa-table"></i> <span>View Result</span></a>
                      </li>
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Student Leave </span></a>
+                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Apply for Leave </span></a>
                      </li>
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Student Feedback</span></a>
+                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Send Feedback</span></a>
                      </li>
                      <li>
                         <a href={%url 'logout' %}><i class="fas fa-table"></i> <span>Log out</span></a>
