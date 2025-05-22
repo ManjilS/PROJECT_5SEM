@@ -3,6 +3,7 @@
 {% load static %}
 {% block content %}
 
+
                <div class="page-header">
                   <div class="row">
                      <div class="col-sm-12">
@@ -99,7 +100,7 @@
                            </div>
                         </div>
                         <div class="card-body">
-                           <div id="apexcharts-area"></div>
+                           <div id="chart"></div>
                         </div>
                      </div>
                   </div>
@@ -126,7 +127,7 @@
                            </div>
                         </div>
                         <div class="card-body">
-                           <div id="bar"></div>
+                           <div id="bars"></div>
                         </div>
                      </div>
                   </div>
@@ -274,5 +275,6 @@
                   </div>
                </div>
             
-
+{%include 'includes/chart.html' %}
+               
 {% endblock %}

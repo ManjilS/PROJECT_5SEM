@@ -24,7 +24,11 @@ urlpatterns = [
 
    #Staff Path
    path('staff/home/',Staff_Views.Staff_home,name='staff_home'),
-    
+   path('staff/Notification/',Staff_Views.Staff_notification,name='staff_notification'),
+   path('staff/mark_as_done/<str:status>',Staff_Views.Staff_mark_as_done,name='staff_mark_as_done'),
+   path('staff/apply_leave/',Staff_Views.Staff_apply_leave,name='staff_apply_leave'),
+    path('staff/apply_leave_save',Staff_Views.Staff_apply_leave_save,name='staff_apply_leave_save'),
+
 
     #profile update
 
@@ -66,5 +70,10 @@ urlpatterns = [
     path('Hod/Session/update',Hod_Views.update_session,name='update_session'),
     path('Hod/Session/delete/<str:id>',Hod_Views.delete_session,name='delete_session'),
     
+    path('Hod/Staff/send_notification',Hod_Views.send_staff_notification,name='send_staff_notification'),
+    path('Hod/Staff/save_notification',Hod_Views.save_staff_notification,name='save_staff_notification'),
 
+    path('Hod/Staff/leave_view',Hod_Views.view_staff_leave,name='view_staff_leave'),
+    path('Hod/Staff/approve_leave/<str:id>',Hod_Views.staff_approve_leave,name='staff_approve_leave'),
+    path('Hod/Staff/disapprove_leave/<str:id>',Hod_Views.staff_disapprove_leave,name='staff_disapprove_leave'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

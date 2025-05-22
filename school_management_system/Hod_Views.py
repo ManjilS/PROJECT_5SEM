@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, student,CustomUser,staff,subject
+from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -12,8 +12,8 @@ def home(request):
     staff_count = staff.objects.all().count()
     course_count = course.objects.all().count()
     subject_count = subject.objects.all().count()
-    male_student_count = student.objects.filter(gender='M').count()
-    female_student_count = student.objects.filter(gender='F').count()
+    male_student_count = student.objects.filter(gender='Male').count()
+    female_student_count = student.objects.filter(gender='Female').count()
 
     context = {
         'student_count': student_count,
@@ -519,3 +519,54 @@ def delete_session(request, id):
     session_obj.delete()
     messages.success(request, 'Session deleted successfully')
     return redirect('view_session')
+
+def send_staff_notification(request):
+    staff_members = staff.objects.all()
+    see_notification = staff_notification.objects.all().order_by('-id')[0:5]
+    context = {
+        'staff_members': staff_members,
+        'see_notification': see_notification,
+    }
+    
+    return render(request, 'Hod/send_staff_notification.html',context)
+
+def save_staff_notification(request):
+    if request.method == 'POST':
+        staff_id = request.POST.get('staff_id')
+        message = request.POST.get('message')
+
+        staff_obj = staff.objects.get(admin=staff_id)
+        notification =staff_notification(
+            staff_id=staff_obj,
+            message=message
+        )
+
+        # Save the notification to the user's profile
+        
+        notification.save()
+
+        messages.success(request, 'Notification sent successfully')
+        return redirect('send_staff_notification')
+
+    return render(request, 'Hod/send_staff_notification.html')
+    
+def view_staff_leave(request):
+    staff_leave_obj = staff_leave.objects.all()
+    context = {
+        'staff_leave_obj': staff_leave_obj,
+    }
+    return render(request, 'Hod/view_staff_leave.html',context)
+
+def staff_approve_leave(request, id):
+    staff_leave_obj = staff_leave.objects.get(id=id)
+    staff_leave_obj.leave_status = 1
+    staff_leave_obj.save()
+    messages.success(request, 'Leave approved successfully')
+    return redirect('view_staff_leave')
+
+def staff_disapprove_leave(request, id):
+    staff_leave_obj = staff_leave.objects.get(id=id)
+    staff_leave_obj.leave_status = 2
+    staff_leave_obj.save()
+    messages.success(request, 'Leave disapproved successfully')
+    return redirect('view_staff_leave')
