@@ -16,7 +16,8 @@ urlpatterns = [
 
     path('Hod/staff/Add',Hod_Views.add_staff,name='add_staff'),
     path('Hod/staff/View',Hod_Views.view_staff,name='view_staff'),
-
+    path('Hod/staff/feedback',Hod_Views.views_staff_feedback,name='staff_feedback_reply'),
+    path('Hod/staff/feedback/save',Hod_Views.views_staff_feedback_save,name='staff_feedback_reply_save'),
 
     #Student path
     path('student/home/',Student_Views.Student_home,name='student_home'),
@@ -29,7 +30,10 @@ urlpatterns = [
    path('staff/Notification/',Staff_Views.Staff_notification,name='staff_notification'),
    path('staff/mark_as_done/<str:status>',Staff_Views.Staff_mark_as_done,name='staff_mark_as_done'),
    path('staff/apply_leave/',Staff_Views.Staff_apply_leave,name='staff_apply_leave'),
-    path('staff/apply_leave_save',Staff_Views.Staff_apply_leave_save,name='staff_apply_leave_save'),
+   path('staff/apply_leave_save',Staff_Views.Staff_apply_leave_save,name='staff_apply_leave_save'),
+   path('staff/feedback',Staff_Views.Staff_feedback,name='staff_feedback'),
+   path('staff/feedback_save',Staff_Views.Staff_feedback_save,name='staff_feedback_save'),
+
 
 
     #profile update

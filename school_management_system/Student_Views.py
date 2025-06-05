@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect
+
 from app.models import course, session_year, student,CustomUser,staff,subject,student_notification
+
+
+
 def Student_home(request):
     
         return render(request, 'Student/home.html', {'message': 'Student logged in successfully!'})
