@@ -20,6 +20,8 @@ urlpatterns = [
 
     #Student path
     path('student/home/',Student_Views.Student_home,name='student_home'),
+    path('student/Notification/',Student_Views.Student_notification,name='student_notification'),
+   path('student/mark_as_done/<str:status>',Student_Views.Student_mark_as_done,name='student_mark_as_done'),
 
 
    #Staff Path
@@ -72,6 +74,8 @@ urlpatterns = [
     
     path('Hod/Staff/send_notification',Hod_Views.send_staff_notification,name='send_staff_notification'),
     path('Hod/Staff/save_notification',Hod_Views.save_staff_notification,name='save_staff_notification'),
+    path('Hod/Student/send_notification',Hod_Views.send_student_notification,name='send_student_notification'),
+    path('Hod/Student/save_notification',Hod_Views.save_student_notification,name='save_student_notification'),
 
     path('Hod/Staff/leave_view',Hod_Views.view_staff_leave,name='view_staff_leave'),
     path('Hod/Staff/approve_leave/<str:id>',Hod_Views.staff_approve_leave,name='staff_approve_leave'),
