@@ -12,7 +12,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th>Id</th>
-                    <!th>Image</th>
+                    <th>Image</th>
                     <th>Staff Name</th>
                     <th>Feedback</th>
                     <th>Reply</th>
@@ -20,38 +20,37 @@
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-    {% for i in feedback %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <!td>
-            {% if i.staff_id.admin.profile_pic %}
-                <img src="{{ i.staff_id.admin.profile_pic.url }}" width="50" height="50" class="rounded-circle">
-            {% else %}
-                No Image
-            {% endif %}
-        <!/td>
-        <td>{{ i.staff_id.admin.first_name }} {{ i.staff_id.admin.last_name }}</td>
-        <td>{{ i.feedback }}</td>
-        
-        
-        <td>
-            {% if i.feedback_reply %}
-                {{ i.feedback_reply }}
-            {% else %}
-                <span class="text-muted">No reply yet</span>
-            {% endif %}
-        </td>
-
-        <td>{{ i.created_at }}</td>
-        <td>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#send_staff_notification-{{ forloop.counter }}">
-                Send Feedback
-            </button>
-        </td>
-    </tr>
-    {% endfor %}
+      <tbody>
+            {% for i in feedback %}
+            <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+        {% if i.staff_id.admin.profile_pic %}
+            <img src="{{ i.staff_id.admin.profile_pic.url }}" width="50" height="50" class="rounded-circle">
+        {% else %}
+            No Image
+        {% endif %}
+           </td> 
+           <td>{{ i.staff_id.admin.first_name }} {{ i.staff_id.admin.last_name }}</td>
+           <td>{{ i.feedback }}</td>
+           <td>
+        {% if i.feedback_reply %}
+            {{ i.feedback_reply }}
+        {% else %}
+            <span class="text-muted">No reply yet</span>
+        {% endif %}
+            </td>
+           <td>{{ i.created_at }}</td>
+          <td>
+             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#send_staff_notification-{{ forloop.counter }}">
+              Send Feedback
+              </button>
+         </td>
+        </tr>
+        {% endfor %}
 </tbody>
+
+
 
         </table>
     </div>
@@ -78,10 +77,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for i in see_notification %}
+                    {% for i in feedback %}
                     <tr>
                         <td>{{ i.staff_id.admin.first_name }} {{ i.staff_id.admin.last_name }}</td>
-                        <td>{{ i.message }}</td>
+                        <td>{{ i.feedback_reply }}</td>
                         <td>
                             {% if i.status == 0 %}
                                 <span class="badge badge-success">Delivered</span>

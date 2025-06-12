@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback
+from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -597,4 +597,58 @@ def views_staff_feedback_save(request):
          feedback.save()
          messages.success(request, "Feedback send successfully")
          return redirect('staff_feedback_reply')
-   
+
+@login_required(login_url='/')
+def send_student_notification(request):
+    students = student.objects.all()
+    see_notification = student_notification.objects.all().order_by('-id')[0:5]
+    context = {
+        'students': students,
+        'see_notification': see_notification,
+    }
+    
+    return render(request, 'Hod/send_student_notification.html',context)
+
+@login_required(login_url='/')
+def save_student_notification(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        message = request.POST.get('message')
+
+        student_obj = student.objects.get(admin=student_id)
+        notification =student_notification(
+            student_id=student_obj,
+            message=message
+        )
+
+        # Save the notification to the user's profile
+        
+        notification.save()
+
+        messages.success(request, 'Notification sent successfully')
+        return redirect('send_student_notification')
+
+    return render(request, 'Hod/send_student_notification.html')
+
+def views_student_feedback(request): 
+    feedback = student_feedback.objects.all() 
+
+    context = {
+        'feedback': feedback, 
+    }
+    return render(request, 'Hod/student_feedback.html', context)
+
+def views_student_feedback_save(request):
+   if request.method == 'POST':
+        feedback_id = request.POST.get('feedback_id')
+        feedback_reply = request.POST.get('feedback_reply')
+
+        try:
+            feedback = student_feedback.objects.get(id=feedback_id)
+            feedback.feedback_reply = feedback_reply
+            feedback.save()
+            messages.success(request, "Feedback sent successfully.")
+        except student_feedback.DoesNotExist:
+            messages.error(request, "Feedback not found.")
+
+        return redirect('student_feedback_reply')

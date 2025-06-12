@@ -15,6 +15,11 @@
                     <li class="breadcrumb-item active">Student Dashboard</li>
                 </ul>
             </div>
+            <div>
+                {% if message %}
+                    <div class="alert alert-success">{{ message }}</div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
@@ -27,14 +32,18 @@
                     <h5 class="card-title">Student Information</h5>
                 </div>
                 <div class="card-body text-center">
-                    <img src="{{ user.profile_pic.url }}" alt="{{ user.first_name }}'s Profile Picture" width="100" class="rounded-circle mb-3" />
-                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ user.email }}</p>
-                    <p><strong>Address:</strong> {{ student.address }}</p>
-                    <p><strong>Gender:</strong> {{ student.gender }}</p>
-                    <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
-                    <p><strong>Course:</strong> {{ student.course_id.course_name }}</p>
-                    <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+                    {% if user.profile_pic %}
+                     <img src="{{ user.profile_pic.url }}" alt="{{ user.first_name }}'s Profile Picture" width="100" class="rounded-circle mb-3" />
+                    {% else %}
+                     <img src="{% static 'img/default-profile.png' %}" alt="Default Profile Picture" width="100" class="rounded-circle mb-3" />
+                     {% endif %}
+                     <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                     <p><strong>Email:</strong> {{ user.email }}</p>
+                     <p><strong>Address:</strong> {{ student.address }}</p>
+                     <p><strong>Gender:</strong> {{ student.gender }}</p>
+                     <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
+                     <p><strong>Course:</strong> {{ student.course_id.course_name }}</p>
+                     <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
                 </div>
             </div>
         </div>
@@ -70,7 +79,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% if class_routine %}
+                                <!-->{% if class_routine %}
                                     {% for class in class_routine %}
                                     <tr>
                                         <td>{{ class.day }}</td>
@@ -83,6 +92,7 @@
                                         <td colspan="3" class="text-center">No class routine available.</td>
                                     </tr>
                                 {% endif %}
+                                <!-->
                             </tbody>
                         </table>
                     </div>

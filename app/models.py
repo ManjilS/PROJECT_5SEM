@@ -91,6 +91,17 @@ class staff_leave(models.Model):
     def __str__(self):
         return str(self.staff_id.admin.first_name) + " " + str(self.leave_start_date) + " - " + str(self.leave_end_date)
     
+
+
+class student_notification(models.Model):
+    student_id = models.ForeignKey(student, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateField(auto_now_add=True)
+    status = models.IntegerField(null=True,default=0)
+    
+    def __str__(self):
+        return str(self.student_id.admin.first_name) 
+
 class staff_feedback(models.Model):   
     staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
     feedback = models.TextField()
@@ -100,3 +111,13 @@ class staff_feedback(models.Model):
     
     def __str__(self):
         return self.staff_id.admin.first_name + " " + self.staff_id.admin.last_name
+
+class student_feedback(models.Model):   
+    student_id = models.ForeignKey(student, on_delete=models.CASCADE)
+    feedback = models.TextField()
+    feedback_reply = models.TextField(blank=True)
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+    
+    def __str__(self):
+        return self.student_id.admin.first_name + " " + self.student_id.admin.last_name
