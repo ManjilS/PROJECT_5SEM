@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import staff, CustomUser, course, session_year, student, student_notification, subject,staff_notification,staff_leave,staff_feedback
+from .models import staff, CustomUser, course, session_year, student, student_notification, subject,staff_notification,staff_leave,staff_feedback,student_leave,attendance,attendance_report
 
 
 
@@ -21,6 +21,10 @@ admin.site.register(staff_leave)
 admin.site.register(student_notification)
 
 admin.site.register(staff_feedback)
+admin.site.register(student_leave)
+
+admin.site.register(attendance)
+admin.site.register(attendance_report)
 
 
 

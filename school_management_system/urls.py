@@ -22,9 +22,14 @@ urlpatterns = [
     #Student path
     path('student/home/',Student_Views.Student_home,name='student_home'),
     path('student/Notification/',Student_Views.Student_notification,name='student_notification'),
-   path('student/mark_as_done/<str:status>',Student_Views.Student_mark_as_done,name='student_mark_as_done'),
+    path('student/mark_as_done/<str:status>',Student_Views.Student_mark_as_done,name='student_mark_as_done'),
 
 
+    path('student/apply_for_leave/',Student_Views.Student_leave,name='student_leave'),
+    path('student/leave_save',Student_Views.Student_leave_save,name='student_leave_save'),
+  
+  
+  
    #Staff Path
    path('staff/home/',Staff_Views.Staff_home,name='staff_home'),
    path('staff/Notification/',Staff_Views.Staff_notification,name='staff_notification'),
@@ -84,4 +89,8 @@ urlpatterns = [
     path('Hod/Staff/leave_view',Hod_Views.view_staff_leave,name='view_staff_leave'),
     path('Hod/Staff/approve_leave/<str:id>',Hod_Views.staff_approve_leave,name='staff_approve_leave'),
     path('Hod/Staff/disapprove_leave/<str:id>',Hod_Views.staff_disapprove_leave,name='staff_disapprove_leave'),
+
+    path('Hod/Student/leave_view',Hod_Views.view_student_leave,name='view_student_leave'),
+    path('Hod/Student/approve_leave/<str:id>',Hod_Views.student_approve_leave,name='student_approve_leave'),
+    path('Hod/Student/disapprove_leave/<str:id>',Hod_Views.student_disapprove_leave,name='student_disapprove_leave'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

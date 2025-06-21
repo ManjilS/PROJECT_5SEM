@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification
+from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_leave
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -629,3 +629,26 @@ def save_student_notification(request):
         return redirect('send_student_notification')
 
     return render(request, 'Hod/send_student_notification.html')
+
+def view_student_leave(request):
+    student_leave_obj = student_leave.objects.all()
+    context = {
+        'student_leave_obj': student_leave_obj,
+    }
+    return render(request, 'Hod/view_student_leave.html',context)
+
+@login_required(login_url='/')
+def student_approve_leave(request, id):
+    student_leave_obj = student_leave.objects.get(id=id)
+    student_leave_obj.leave_status = 1
+    student_leave_obj.save()
+    messages.success(request, 'Leave approved successfully')
+    return redirect('view_student_leave')
+
+@login_required(login_url='/')
+def student_disapprove_leave(request, id):
+    student_leave_obj = student_leave.objects.get(id=id)
+    student_leave_obj.leave_status = 2
+    student_leave_obj.save()
+    messages.success(request, 'Leave disapproved successfully')
+    return redirect('view_student_leave')
