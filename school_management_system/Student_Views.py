@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 
-from app.models import course, session_year, student,CustomUser,staff,subject,student_notification,student_leave
+
+from app.models import course, session_year, student,CustomUser,staff,subject,student_notification,student_feedback,student_leave
 from django.contrib import messages
 
 
@@ -59,3 +60,26 @@ def Student_leave_save(request):
         messages.success(request, "Leave applied successfully")
         return redirect('student_leave')
     return None
+def Student_feedback(request ):
+
+    student_id= student.objects.get(admin=request.user.id)
+    feedback_history = student_feedback.objects.filter(student_id = student_id )
+    context = {
+        'feedback_history': feedback_history,
+    }
+    return render(request, 'student/feedback.html',context)
+
+def Student_feedback_save(request):
+    if request.method == "POST":
+        feedback = request.POST.get('feedback')
+        student_id = student.objects.get(admin=request.user.id)  # Declare here or earlier in the function
+
+        feedback= student_feedback(
+            student_id=student_id,
+            feedback=feedback,
+            feedback_reply="",
+        )
+        feedback.save()
+
+        messages.success(request, "Feedback submitted successfully")
+        return redirect('student_feedback')

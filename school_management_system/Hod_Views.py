@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_leave
+
+from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -652,3 +653,27 @@ def student_disapprove_leave(request, id):
     student_leave_obj.save()
     messages.success(request, 'Leave disapproved successfully')
     return redirect('view_student_leave')
+
+
+def views_student_feedback(request): 
+    feedback = student_feedback.objects.all() 
+
+    context = {
+        'feedback': feedback, 
+    }
+    return render(request, 'Hod/student_feedback.html', context)
+
+def views_student_feedback_save(request):
+   if request.method == 'POST':
+        feedback_id = request.POST.get('feedback_id')
+        feedback_reply = request.POST.get('feedback_reply')
+
+        try:
+            feedback = student_feedback.objects.get(id=feedback_id)
+            feedback.feedback_reply = feedback_reply
+            feedback.save()
+            messages.success(request, "Feedback sent successfully.")
+        except student_feedback.DoesNotExist:
+            messages.error(request, "Feedback not found.")
+
+        return redirect('student_feedback_reply')

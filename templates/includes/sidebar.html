@@ -56,7 +56,7 @@
                         <a href="{% url 'send_student_notification' %}"><i class="fas fa-holly-berry"></i> <span>Send Student Notification</span></a>
                      </li>
                      <li>
-                        <a href="fees.html"><i class="fas fa-comment-dollar"></i> <span>Student Feedback</span></a>
+                        <a href="{% url 'student_feedback_reply'%}"><i class="fas fa-comment-dollar"></i> <span>Student Feedback</span></a>
                      </li>
                      <li>
                         <a href="{% url 'staff_feedback_reply' %}"><i class="fas fa-clipboard-list"></i> <span>Staff Feedback</span></a>
@@ -125,7 +125,7 @@
                         <a href="{% url 'student_notification'%}"><i class="fas fa-table"></i> <span>View Notification </span></a>
                      </li>
                      <li>
-                        <a href="time-table.html"><i class="fas fa-table"></i> <span>Send Feedback</span></a>
+                        <a href="{% url 'student_feedback'%}"><i class="fas fa-table"></i> <span>Send Feedback</span></a>
                      </li>
                      <li>
                         <a href={% url 'logout' %}><i class="fas fa-table"></i> <span>Log out</span></a>
