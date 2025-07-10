@@ -143,7 +143,7 @@ class attendance(models.Model):
     updated_at = models.DateField(auto_now=True)
     
     def __str__(self):
-        return str(self.student_id.admin.first_name) + " - " + str(self.subject_id.subject_name) + " - " + str(self.attendance_date)
+        return str(self.subject_id.subject_name) + " - " + str(self.attendance_date) + " - " + str(self.session_year_id.session_start_year) + " - " + str(self.session_year_id.session_end_year)
     
 class attendance_report(models.Model):
     attendance_id = models.ForeignKey(attendance, on_delete=models.CASCADE)

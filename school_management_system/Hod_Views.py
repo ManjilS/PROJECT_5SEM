@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave
+from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -677,3 +677,48 @@ def views_student_feedback_save(request):
             messages.error(request, "Feedback not found.")
 
         return redirect('student_feedback_reply')
+
+
+def view_attendance(request):
+    
+    subject_obj = subject.objects.all()
+    session_year_obj = session_year.objects.all()
+    action = request.GET.get('action')
+
+    get_subject = None
+    get_session = None
+    attendance_date = None
+    attendance_report_obj = None
+    if action is not None:
+        if request.method == 'POST':
+            subject_id = request.POST.get('subject_id')
+            session_id = request.POST.get('session_id')
+            attendance_date = request.POST.get('attendance_date')
+
+            get_subject = subject.objects.get(id=subject_id)
+            get_session = session_year.objects.get(id=session_id)
+
+            attendance_obj = attendance.objects.filter(
+                subject_id=get_subject,
+                attendance_date=attendance_date,
+                session_year_id=get_session,
+                
+            )
+            for i in attendance_obj:
+                attendance_id = i.id
+                attendance_report_obj = attendance_report.objects.filter(attendance_id=attendance_id)
+           
+
+           
+
+    context= {
+        'subject_obj': subject_obj,
+        'session_year_obj': session_year_obj,
+        'action': action,
+        'get_subject': get_subject,
+        'get_session': get_session,
+        'attendance_date': attendance_date,
+        'attendance_report_obj': attendance_report_obj ,
+    }
+    
+    return render(request, 'Hod/hod_view_attendance.html',context)

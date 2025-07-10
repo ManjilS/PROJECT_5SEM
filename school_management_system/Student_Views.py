@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 
-from app.models import course, session_year, student,CustomUser,staff,subject,student_notification,student_feedback,student_leave
+from app.models import course, session_year, student,CustomUser,staff,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
 from django.contrib import messages
 
 
@@ -83,3 +83,27 @@ def Student_feedback_save(request):
 
         messages.success(request, "Feedback submitted successfully")
         return redirect('student_feedback')
+    
+def student_view_attendance(request):
+    student_obj = student.objects.get(admin=request.user.id)
+    subject_obj = subject.objects.filter(course_id=student_obj.course_id)
+
+    action = request.GET.get('action')
+    get_subject = None
+    attendance_report_obj = None
+    if action is not None:
+        if request.method == 'POST':
+            subject_id = request.POST.get('subject_id')
+            get_subject = subject.objects.get(id=subject_id)
+
+           
+            attendance_report_obj = attendance_report.objects.filter(student_id=student_obj,attendance_id__subject_id=get_subject)
+    
+    context = {
+        'subject_obj': subject_obj,
+        'action': action,
+        'get_subject': get_subject,
+        'attendance_report_obj': attendance_report_obj,
+    }
+    return render(request, 'Student/student_view_attendance.html', context)
+

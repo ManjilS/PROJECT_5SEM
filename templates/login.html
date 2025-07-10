@@ -5,9 +5,9 @@
    <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-      <title>Preskool - Login</title>
+      <title>School Management System - Login</title>
       <link rel="shortcut icon" href="{% static 'assets/img/favicon.png' %}">
-      <link rel="stylesheet" href="{% static 'https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&amp;display=swap' %}">
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">      
       <link rel="stylesheet" href="{% static 'assets/plugins/bootstrap/css/bootstrap.min.css' %}">
       <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/fontawesome.min.css' %}">
       <link rel="stylesheet" href="{% static 'assets/plugins/fontawesome/css/all.min.css' %}">
@@ -26,30 +26,42 @@
                      <div class="login-right-wrap">
                         <h1>Login</h1>
                         <p class="account-subtitle">Access to our dashboard</p>
+                        {% if messages %}
+                           {% for message in messages %}
+                             <div class="alert alert-danger" role="alert">
+                               {{ message }}
+                             </div>
+                           {% endfor %}
+                        {% endif %}
+                        <script>
+                          // Enable close for all alerts
+                          document.addEventListener('DOMContentLoaded', function() {
+                           document.querySelectorAll('.alert').forEach(function(alert) {
+                             var btn = document.createElement('button');
+                             btn.type = 'button';
+                             btn.className = 'close';
+                             btn.setAttribute('data-dismiss', 'alert');
+                             btn.innerHTML = '&times;';
+                             btn.onclick = function() {
+                              alert.style.display = 'none';
+                             };
+                             alert.insertBefore(btn, alert.firstChild);
+                           });
+                          });
+                        </script>
                         <form action="{% url 'doLogin'%}" method="post">
                            {% csrf_token %}
                            <div class="form-group">
-                              <input class="form-control" type="email" placeholder="Email" name="email" required>
+                             <input class="form-control" type="email" placeholder="Email" name="email" required>
                            </div>
                            <div class="form-group">
-                              <input class="form-control" type="password" placeholder="Password" name="password" required>
+                             <input class="form-control" type="password" placeholder="Password" name="password" required>
                            </div>
                            <div class="form-group">
-                              <button class="btn btn-primary btn-block" type="submit" value ="login">Login</button>
+                             <button class="btn btn-primary btn-block" type="submit" value ="login">Login</button>
                            </div>
                         </form>
-                        <div class="text-center forgotpass"><a href="forgot-password.html">Forgot Password?</a></div>
-                        <div class="login-or">
-                           <span class="or-line"></span>
-                           <span class="span-or">or</span>
-                        </div>
-                        <div class="social-login">
-                           <span>Login with</span>
-                           <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a><a href="#" class="google"><i class="fab fa-google"></i></a>
-                        </div>
-                        <div class="text-center dont-have">Don’t have an account? <a href="register.html">Register</a></div>
                      </div>
-                  </div>
                </div>
             </div>
          </div>

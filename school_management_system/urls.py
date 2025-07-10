@@ -28,6 +28,8 @@ urlpatterns = [
 
     path('student/apply_for_leave/',Student_Views.Student_leave,name='student_leave'),
     path('student/leave_save',Student_Views.Student_leave_save,name='student_leave_save'),
+
+    path('student/view_attendance/',Student_Views.student_view_attendance,name='student_view_attendance'),
   
   
   
@@ -41,6 +43,9 @@ urlpatterns = [
    path('staff/feedback_save',Staff_Views.Staff_feedback_save,name='staff_feedback_save'),
 
 
+   path('staff/take_attendance/',Staff_Views.take_attendance,name='take_attendance'),
+   path('staff/save_attendance',Staff_Views.save_attendance,name='save_attendance'),
+   path('staff/view_attendance/',Staff_Views.view_attendance,name='view_attendance'),
 
     #profile update
 
@@ -99,4 +104,6 @@ urlpatterns = [
 
     path('Hod/student/feedback',Hod_Views.views_student_feedback,name='student_feedback_reply'),
     path('Hod/student/feedback/save',Hod_Views.views_student_feedback_save,name='student_feedback_reply_save'),
+
+    path('Hod/view_attendance/',Hod_Views.view_attendance,name='hod_view_attendance'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
