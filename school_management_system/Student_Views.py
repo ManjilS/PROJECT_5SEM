@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 
 
-from app.models import course, session_year, student,CustomUser,staff,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
+from app.models import course, session_year, student,CustomUser,staff,result,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
 from django.contrib import messages
 
 
@@ -106,4 +106,19 @@ def student_view_attendance(request):
         'attendance_report_obj': attendance_report_obj,
     }
     return render(request, 'Student/student_view_attendance.html', context)
+
+def student_view_result(request):
+    student_obj = student.objects.get(admin=request.user.id)
+    result_obj = result.objects.filter(student_id=student_obj)
+    for i in result_obj:
+        assignment_marks = i.assignment_marks
+        ut_marks = i.ut_marks
+        assessment_marks = i.assessment_marks
+    context = {
+        'result_obj': result_obj,
+        'assignment_marks': assignment_marks,
+        'ut_marks': ut_marks,
+        'assessment_marks': assessment_marks,
+    }
+    return render(request, 'Student/student_view_result.html', context)
 

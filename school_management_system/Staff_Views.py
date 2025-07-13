@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
-from app.models import staff, course, subject, student,CustomUser,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report
+from app.models import staff, course, subject, student,CustomUser,result,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 @login_required(login_url='/')
 def Staff_home(request):
@@ -200,3 +201,77 @@ def view_attendance(request):
         'attendance_report_obj': attendance_report_obj ,
     }
     return render(request, 'Staff/view_attendance.html', context)
+
+def add_result(request):
+    staff_obj = staff.objects.filter(admin=request.user.id)
+    subject_obj = subject.objects.filter(staff_id__in=staff_obj)
+    session_year_obj = session_year.objects.all()
+    action = request.GET.get('action')
+    get_subject = None
+    get_session = None
+    student_obj = None
+    if action is not None:
+        if request.method == 'POST':
+            subject_id = request.POST.get('subject_id')
+            session_id = request.POST.get('session_id')
+
+            get_subject = subject.objects.get(id=subject_id)
+            get_session = session_year.objects.get(id=session_id)
+
+            subject_obj = subject.objects.filter(id=subject_id)
+            for i in subject_obj:
+                student_id = i.course_id.id
+                student_obj = student.objects.filter(course_id=student_id)
+    context = {
+        'subject_obj': subject_obj,
+        'session_year_obj': session_year_obj,
+        'action': action,
+        'get_subject': get_subject,
+        'get_session': get_session,
+        'student_obj': student_obj,
+
+    }
+
+    return render(request, 'Staff/add_result.html',context)
+
+def save_result(request):
+    if request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        
+        student_id = request.POST.get('student_id')
+        assessment_marks = request.POST.get('assessment_marks')
+        ut_marks = request.POST.get('UT_marks')
+        assignment_marks = request.POST.get('assignment_marks')
+
+        get_subject = subject.objects.get(id=subject_id)
+        
+        get_student = student.objects.get(id=student_id)
+        check_exists = result.objects.filter(
+            subject_id=get_subject,
+            student_id=get_student
+        ).exists()
+        if check_exists:
+            result_obj = result.objects.get(
+                subject_id=get_subject,
+                student_id=get_student
+            )
+            result_obj.assignment_marks = assignment_marks
+            result_obj.assessment_marks = assessment_marks
+            result_obj.ut_marks = ut_marks
+            result_obj.save()
+            messages.success(request, "Result updated successfully")
+            return redirect('add_result')
+        else:
+            result_obj = result(
+                student_id=get_student,
+                subject_id=get_subject,
+                assignment_marks=assignment_marks,
+                assessment_marks=assessment_marks,
+                ut_marks=ut_marks
+            )
+            result_obj.save()
+            messages.success(request, "Result saved successfully")
+            return redirect('add_result')
+            
+        
+    return None

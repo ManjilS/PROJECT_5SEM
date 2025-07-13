@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-from app.models import course, session_year, staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report
+from app.models import course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -722,3 +722,35 @@ def view_attendance(request):
     }
     
     return render(request, 'Hod/hod_view_attendance.html',context)
+
+def view_result(request):
+    subject_obj = subject.objects.all()
+    session_year_obj = session_year.objects.all()
+    action = request.GET.get('action')
+
+    get_subject = None
+    get_session = None
+    student_obj = None
+    result_obj = None
+    if action is not None:
+        if request.method == 'POST':
+            subject_id = request.POST.get('subject_id')
+            session_id = request.POST.get('session_id')
+
+            get_subject = subject.objects.get(id=subject_id)
+            get_session = session_year.objects.get(id=session_id)
+
+            student_obj = student.objects.filter(course_id=get_subject.course_id, session_year_id=get_session)
+            result_obj = result.objects.filter(student_id__in=student_obj, subject_id=get_subject)
+
+    context= {
+        'subject_obj': subject_obj,
+        'session_year_obj': session_year_obj,
+        'action': action,
+        'get_subject': get_subject,
+        'get_session': get_session,
+        'student_obj': student_obj,
+        'result_obj': result_obj,
+    }
+    
+    return render(request, 'Hod/hod_view_result.html',context)

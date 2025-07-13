@@ -22,7 +22,7 @@
 {% csrf_token %}
 <div class="row">
 <div class="col-12">
-<h5 class="form-title"><span>Attendance Information</span></h5>
+<h5 class="form-title"><span>Add Result</span></h5>
 </div>
 <div class="col-12 col-sm-6">
 <div class="form-group">
@@ -53,12 +53,12 @@
 </div>
 </div>
 <div class="col-12">
-<button type="Fetch Student" class="btn btn-primary">Fetch Student</button>
+<button type="submit" class="btn btn-primary">Fetch Student</button>
 </div>
 </div>
 </form>
 {% else %}
-<form method="post" action="{% url 'save_attendance'%}">
+<form method="post" action="{% url 'save_result' %}">
 {% csrf_token %}
 <div class="row">
 <div class="col-12">
@@ -67,8 +67,10 @@
 <div class="col-12 col-sm-6">
 <div class="form-group">
 <label>Subject</label>
-<select class="form-control" name="subject_id">
-    <option value="{{get_subject.id}}">{{get_subject.subject_name}}({{get_subject.course_id}})</option>
+<select class="form-control" name="subject_id" disabled>
+    
+    <option value="{{get_subject.id}}">{{get_subject.subject_name}}</option>
+    
     
 </select>
 
@@ -77,34 +79,60 @@
 <div class="col-12 col-sm-6">
 <div class="form-group">
 <label>Session Year</label>
-<select class="form-control" name="session_id">
-    <option value="{{get_session.id}}">{{get_session}}</option>
+<select class="form-control" name="session_id" disabled>
+   
+    <option value="{{get_session.id}}">{{get_session.session_start_year}}-{{get_session.session_end_year}}</option>
+    
     
 </select>
 </div>
 </div>
 
+    <input type="hidden" name="subject_id" value="{{ get_subject.id }}">
+    <input type="hidden" name="session_id" value="{{ get_session.id }}">
+<div class="col-sm-11">
+<div class="form-group">
+    <label>Select Student</label>
+        <select class="form-control" name="student_id">
+            <option value="">Select Student</option>
+            {% for i in student_obj %}
+                <option value="{{ i.id }}">{{ i.admin.first_name }} {{ i.admin.last_name }}</option>
+            {% endfor %}
+            
+                 
+        </select>
+
+</div>
+</div>
 <div class="col-12 col-sm-6">
 <div class="form-group">
-<label>Attendance Date</label>
-<input type="date" class="form-control" name="attendance_date"  required>
+<label>Assignment Marks</label>
+<input type="text" class="form-control" name="assignment_marks"  required>
 </div>
 </div>
-{% for i in student_obj%}
-<div class="col-12 my-4 mt-4">
-<div class="form-group form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1" value ="{{i.id}}" name="students">
-    <label class="form-check-label mb-0" for="exampleCheck1">{{i.admin.first_name}} {{i.admin.last_name}}</label>
-  </div>
+
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>Assessment Marks</label>
+<input type="text" class="form-control" name="assessment_marks"  required>
 </div>
-{%endfor%}
+</div>
+
+<div class="col-12 col-sm-6">
+<div class="form-group">
+<label>UT Marks</label>
+<input type="text" class="form-control" name="UT_marks"  required>
+</div>
+</div>
+
+
 <div class="col-12 col-sm-6">
 <div class="form-group">
 
 </div>
 </div>
 <div class="col-12">
-<button type="Fetch Student" class="btn btn-primary">Submit</button>
+<button type="submit" class="btn btn-primary">Add Result</button>
 </div>
 </div>
 </form>
