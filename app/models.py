@@ -148,11 +148,13 @@ class attendance(models.Model):
 class attendance_report(models.Model):
     attendance_id = models.ForeignKey(attendance, on_delete=models.CASCADE)
     student_id = models.ForeignKey(student, on_delete=models.DO_NOTHING)
+    is_present = models.BooleanField(default=True)   # <-- Added field
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
-    
+
     def __str__(self):
-        return str(self.student_id.admin.first_name) + str(self.student_id.admin.last_name)
+        return f"{self.student_id.admin.first_name} {self.student_id.admin.last_name} - {'Present' if self.is_present else 'Absent'}"
+
     
 class result(models.Model):
     student_id = models.ForeignKey(student, on_delete=models.CASCADE)

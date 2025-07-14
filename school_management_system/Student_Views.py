@@ -6,8 +6,46 @@ from django.contrib import messages
 
 
 def Student_home(request):
-    
-        return render(request, 'Student/home.html', {'message': 'Student logged in successfully!'})
+    student_obj = student.objects.get(admin=request.user)
+
+    # Get all subjects for student's course & session year (assuming course-subject relation exists)
+    subjects = student_obj.course_id.subject_set.all()
+
+    subject_attendance = []
+
+    for subj in subjects:
+        # All attendance sessions for this subject and student's session year
+        total_sessions = attendance_report.objects.filter(
+            student_id=student_obj.id,
+            attendance_id__subject_id=subj.id,
+            attendance_id__session_year_id=student_obj.session_year_id
+        ).count()
+
+        # Present count for this subject
+        present_sessions = attendance_report.objects.filter(
+            student_id=student_obj.id,
+            attendance_id__subject_id=subj.id,
+            attendance_id__session_year_id=student_obj.session_year_id,
+            is_present=True
+        ).count()
+
+        percentage = (present_sessions / total_sessions * 100) if total_sessions > 0 else None
+
+        subject_attendance.append({
+            'subject_name': subj.subject_name,
+            'present': present_sessions,
+            'total': total_sessions,
+            'percentage': percentage,
+        })
+
+    notification_obj = student_notification.objects.filter(student_id=student_obj.id).order_by('-id')
+
+    context = {
+        'student_obj': student_obj,
+        'subject_attendance': subject_attendance,
+        'notification_obj': notification_obj,
+    }
+    return render(request, 'Student/home.html', context)
 
 def Student_notification(request):
     student_obj = student.objects.filter(admin=request.user.id)

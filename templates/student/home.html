@@ -4,7 +4,7 @@
 {% block content %}
 <div class="content container">
     <!-- Page Header -->
-    <div class="page-header">
+    <div class="page-header mb-4">
         <div class="row align-items-center">
             <div class="col">
                 <h3 class="page-title">Student Dashboard</h3>
@@ -15,91 +15,107 @@
                     <li class="breadcrumb-item active">Student Dashboard</li>
                 </ul>
             </div>
-            <div>
-                {% if message %}
-                    <div class="alert alert-success">{{ message }}</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Student Info Card -->
+        <div class="col-md-6 d-flex">
+            <div class="card flex-fill shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">Student Information</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if student_obj.admin.profile_pic %}
+                        <img src="{{ student_obj.admin.profile_pic.url }}" alt="{{ student_obj.admin.first_name }}'s Profile Picture" class="rounded-circle mb-3" width="100" />
+                    {% else %}
+                        <img src="{% static 'img/default-profile.png' %}" alt="Default Profile Picture" class="rounded-circle mb-3" width="100" />
+                    {% endif %}
+                    <p><strong>Name:</strong> {{ student_obj.admin.first_name }} {{ student_obj.admin.last_name }}</p>
+                    <p><strong>Email:</strong> {{ student_obj.admin.email }}</p>
+                    <p><strong>Address:</strong> {{ student_obj.address }}</p>
+                    <p><strong>Gender:</strong> {{ student_obj.gender }}</p>
+                    <p><strong>Phone Number:</strong> {{ student_obj.phone_number }}</p>
+                    <p><strong>Course:</strong> {{ student_obj.course_id.course_name }}</p>
+                    <p><strong>Session Year:</strong> {{ student_obj.session_year_id.session_start_year }} - {{ student_obj.session_year_id.session_end_year }}</p>
+                    <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Summary Card -->
+        <div class="row ">
+        <div class="col-md-12 d-flex">
+        <div class="card flex-fill shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">Attendance By Subject</h5>
+            </div>
+            <div class="card-body">
+                {% if subject_attendance %}
+                    <table class="table table-bordered table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th>Subject</th>
+                                <th>Present</th>
+                                <th>Total Sessions</th>
+                                <th>Attendance %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in subject_attendance %}
+                                <tr>
+                                    <td>{{ att.subject_name }}</td>
+                                    <td>{{ att.present }}</td>
+                                    <td>{{ att.total }}</td>
+                                    <td>
+                                        {% if att.percentage is not None %}
+                                            {{ att.percentage|floatformat:2 }}%
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No attendance data available.</p>
                 {% endif %}
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Student Info & Attendance -->
-    <div class="row">
-        <!-- Student Info Card -->
-        <div class="col-md-6 d-flex">
-            <div class="card flex-fill">
-                <div class="card-header">
-                    <h5 class="card-title">Student Information</h5>
-                </div>
-                <div class="card-body text-center">
-                    {% if user.profile_pic %}
-                     <img src="{{ user.profile_pic.url }}" alt="{{ user.first_name }}'s Profile Picture" width="100" class="rounded-circle mb-3" />
-                    {% else %}
-                     <img src="{% static 'img/default-profile.png' %}" alt="Default Profile Picture" width="100" class="rounded-circle mb-3" />
-                     {% endif %}
-                     <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
-                     <p><strong>Email:</strong> {{ user.email }}</p>
-                     <p><strong>Address:</strong> {{ student.address }}</p>
-                     <p><strong>Gender:</strong> {{ student.gender }}</p>
-                     <p><strong>Phone Number:</strong> {{ student.phone_number }}</p>
-                     <p><strong>Course:</strong> {{ student.course_id.course_name }}</p>
-                     <a href="{% url 'logout' %}" class="btn btn-danger mt-3">Logout</a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Attendance Card -->
-        <div class="col-md-6 d-flex">
-            <div class="card flex-fill">
-                <div class="card-header">
-                    <h5 class="card-title">Attendance</h5>
-                </div>
-                <div class="card-body d-flex align-items-center justify-content-center">
-                    <h4><strong>{{ attendance }}%</strong> Attendance</h4>
-                </div>
-            </div>
-        </div>
     </div>
 
-    <!-- Class Routine -->
-    <div class="row">
+    <!-- Notifications Section -->
+    <div class="row mt-4">
         <div class="col-md-12 d-flex">
-            <div class="card flex-fill">
-                <div class="card-header">
-                    <h5 class="card-title">Class Routine</h5>
+            <div class="card flex-fill shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0"><i class="fas fa-bell me-2"></i> Notifications</h5>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped mb-0">
-                            <thead class="thead-light">
-                                <tr>
-                                    <th>Day</th>
-                                    <th>Subject</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-->{% if class_routine %}
-                                    {% for class in class_routine %}
-                                    <tr>
-                                        <td>{{ class.day }}</td>
-                                        <td>{{ class.subject }}</td>
-                                        <td>{{ class.time }}</td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="3" class="text-center">No class routine available.</td>
-                                    </tr>
-                                {% endif %}
-                                <!-->
-                            </tbody>
-                        </table>
-                    </div>
+                    {% if notification_obj %}
+                        <ul class="list-group">
+                            {% for notif in notification_obj %}
+                                <li class="list-group-item">
+                                    <strong>Notification</strong>  <!-- You can customize this title -->
+                                    <p class="mb-0">{{ notif.message|truncatewords:20 }}</p>
+                                    <small class="text-muted">{{ notif.created_at|date:"M d, Y" }}</small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No notifications available.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{% endblock %}
+<!-- Font Awesome CDN for bell icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+{% endblock %}
