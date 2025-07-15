@@ -6,8 +6,21 @@ from django.shortcuts import get_object_or_404
 
 @login_required(login_url='/')
 def Staff_home(request):
+    staff_obj = staff.objects.get(admin=request.user)
 
-    return render(request, 'Staff/home.html')
+    # Get subjects assigned to the staff
+    assigned_subjects = subject.objects.filter(staff_id=staff_obj)
+
+    # Get notifications for the staff
+    notification_obj = staff_notification.objects.filter(staff_id=staff_obj.id).order_by('-id')
+
+    context = {
+        'staff_obj': staff_obj,
+        'assigned_subjects': assigned_subjects,
+        'notification_obj': notification_obj,
+    }
+
+    return render(request, 'Staff/home.html', context)
 
 @login_required(login_url='/')
 def Staff_notification(request):

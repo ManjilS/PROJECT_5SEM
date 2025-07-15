@@ -22,9 +22,10 @@
         <!-- Student Info Card -->
         <div class="col-md-6 d-flex">
             <div class="card flex-fill shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white" style="background-color: orange;">
                     <h5 class="card-title mb-0">Student Information</h5>
                 </div>
+
                 <div class="card-body text-center">
                     {% if student_obj.admin.profile_pic %}
                         <img src="{{ student_obj.admin.profile_pic.url }}" alt="{{ student_obj.admin.first_name }}'s Profile Picture" class="rounded-circle mb-3" width="100" />
