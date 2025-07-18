@@ -16,6 +16,15 @@ def home(request):
     male_student_count = student.objects.filter(gender='Male').count()
     female_student_count = student.objects.filter(gender='Female').count()
 
+    # 👇 Add student details
+    all_students = student.objects.select_related('course_id').all()
+    if student_count > 0:
+        male_percentage = round(male_student_count / student_count * 100, 2)
+        female_percentage = round(female_student_count / student_count * 100, 2)
+    else:
+        male_percentage = 0
+        female_percentage = 0
+
     context = {
         'student_count': student_count,
         'staff_count': staff_count,
@@ -23,9 +32,13 @@ def home(request):
         'subject_count': subject_count,
         'male_student_count': male_student_count,
         'female_student_count': female_student_count,
+        'all_students': all_students,  # 👈 Include this
+        'male_percentage':male_percentage,
+        'female_percentage':female_percentage,
     }
-    
+
     return render(request, 'Hod/home.html', context)
+
 
 @login_required(login_url='/')
 def myprofile(request):
