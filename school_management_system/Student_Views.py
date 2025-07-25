@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 
 
-from app.models import course, session_year, student,CustomUser,staff,result,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
+from app.models import TimeTable,course, session_year, student,CustomUser,staff,result,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
 from django.contrib import messages
+from datetime import date
 
 
 def Student_home(request):
@@ -160,3 +161,26 @@ def student_view_result(request):
     }
     return render(request, 'Student/student_view_result.html', context)
 
+def student_view_timetable(request):
+    # Get the Student instance for the logged-in user
+    student_instance = student.objects.get(admin=request.user.id)
+
+    course_id = student_instance.course_id
+    session_id = student_instance.session_year_id
+
+    day_selected = request.GET.get('day')
+    if not day_selected:
+        day_selected = date.today().strftime("%A")  # e.g., 'Monday'
+
+    timetable = TimeTable.objects.filter(
+        course_id=course_id,
+        session_year_id=session_id,
+        day=day_selected
+    )
+
+    context = {
+        'timetable': timetable,
+        'day_selected': day_selected,
+        'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    }
+    return render(request, 'Student/view_timetable.html', context)

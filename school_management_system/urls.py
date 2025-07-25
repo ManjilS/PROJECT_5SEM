@@ -31,7 +31,8 @@ urlpatterns = [
 
     path('student/view_attendance/',Student_Views.student_view_attendance,name='student_view_attendance'),
     path('student/view_result/',Student_Views.student_view_result,name='student_view_result'),
-  
+    
+    path('student/view_timetable/', Student_Views.student_view_timetable, name='student_view_timetable'),
   
    #Staff Path
    path('staff/home/',Staff_Views.Staff_home,name='staff_home'),
@@ -48,6 +49,8 @@ urlpatterns = [
    path('staff/view_attendance/',Staff_Views.view_attendance,name='view_attendance'),
    path('staff/add_result/',Staff_Views.add_result,name='add_result'),
    path('staff/save_result',Staff_Views.save_result,name='save_result'),
+
+   path('Staff/view_timetable/', Staff_Views.staff_view_timetable, name='view_timetable'),
 
     #profile update
 
@@ -112,4 +115,8 @@ urlpatterns = [
 
     path('Hod/add-leave-type/', Hod_Views.add_leave_type, name='add_leave_type'),
     path('Hod/delete-leave-type/<int:id>/', Hod_Views.delete_leave_type, name='delete_leave_type'),
+
+
+    path('Hod/add_timetable/', Hod_Views.add_timetable, name='add_timetable'),
+    
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-from app.models import course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report,LeaveType
+from app.models import TimeTable,course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report,LeaveType
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -786,3 +786,41 @@ def view_result(request):
     }
     
     return render(request, 'Hod/hod_view_result.html',context)
+
+
+
+def add_timetable(request):
+    if request.method == "POST":
+        staff_id = request.POST.get("staff")
+        subject_id = request.POST.get("subject")
+        course_id = request.POST.get("course")
+        session_id = request.POST.get("session")
+        day = request.POST.get("day")
+        start_time = request.POST.get("start_time")
+        end_time = request.POST.get("end_time")
+
+        try:
+            timetable = TimeTable(
+                staff_id=staff_id,
+                subject_id=subject_id,
+                course_id=course_id,
+                session_year_id=session_id,
+                day=day,
+                start_time=start_time,
+                end_time=end_time
+            )
+            timetable.save()
+            messages.success(request, "Time Table added successfully.")
+        except Exception as e:
+            messages.error(request, f"Error: {e}")
+        return redirect('add_timetable')
+
+    context = {
+        'staffs': staff.objects.all(),
+        'subjects': subject.objects.all(),
+        'courses': course.objects.all(),
+        'sessions': session_year.objects.all(),
+        'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        'timetables': TimeTable.objects.all().order_by('day', 'start_time'),
+    }
+    return render(request, 'Hod/add_timetable.html', context)

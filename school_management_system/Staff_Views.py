@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from app.models import staff, course, subject, student,CustomUser,result,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report,LeaveType
+from app.models import TimeTable,staff, course, subject, student,CustomUser,result,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report,LeaveType
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -317,3 +317,13 @@ def save_result(request):
             
         
     return None
+
+
+
+def staff_view_timetable(request):
+    try:
+        staff_id = staff.objects.get(admin=request.user.id)
+        timetable = TimeTable.objects.filter(staff_id=staff_id)
+    except staff.DoesNotExist:
+        timetable = []
+    return render(request, 'Staff/view_timetable.html', {'timetable': timetable})

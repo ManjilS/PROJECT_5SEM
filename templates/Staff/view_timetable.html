@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg">
+        <div class="card-header text-white" style="background-color: orange;">
+            <h4 class="mb-0"><i class="fas fa-calendar-plus me-2"></i> My Time Table</h4>
+        </div>
+        <div class="card-body">
+            {% if timetable %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Day</th>
+                            <th>Course</th>
+                            <th>Subject</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in timetable %}
+                        <tr>
+                            <td><i class="fas fa-calendar-day me-1 text-primary"></i>{{ row.day }}</td>
+                            <td>{{ row.course.course_name }}</td>
+                            <td>{{ row.subject.subject_name }}</td>
+                            <td>{{ row.start_time }}</td>
+                            <td>{{ row.end_time }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+                <div class="alert alert-warning">
+                    No timetable available.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
