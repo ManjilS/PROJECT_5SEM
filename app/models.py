@@ -73,11 +73,17 @@ class subject(models.Model):
 class staff_notification(models.Model):
     staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
     message = models.TextField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(null=True,default=0)
     
     def __str__(self):
         return str(self.staff_id.admin.first_name) 
+    
+class LeaveType(models.Model):
+    name = models.CharField(max_length=50, default='General Leave')
+
+    def __str__(self):
+        return self.name
     
 class staff_leave(models.Model):
     staff_id = models.ForeignKey(staff, on_delete=models.CASCADE)
@@ -85,6 +91,7 @@ class staff_leave(models.Model):
     leave_end_date = models.DateField()
     leave_message = models.TextField()
     leave_status = models.IntegerField(null=True,default=0)
+    leave_type = models.ForeignKey(LeaveType, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     
@@ -96,7 +103,7 @@ class staff_leave(models.Model):
 class student_notification(models.Model):
     student_id = models.ForeignKey(student, on_delete=models.CASCADE)
     message = models.TextField()
-    created_at = models.DateField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(null=True,default=0)
     
     def __str__(self):
@@ -167,5 +174,6 @@ class result(models.Model):
     
     def __str__(self):
         return str(self.student_id.admin.first_name) + " " + str(self.subject_id.subject_name) 
+
 
 

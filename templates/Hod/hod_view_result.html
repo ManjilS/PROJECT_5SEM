@@ -119,11 +119,12 @@
                                                     <td>{{ i.assessment_marks }}</td>
                                                     <td>{{ i.ut_marks }}</td>
                                                     <td>
-                                                        {% if i.assessment_marks|floatformat >= 45 and i.ut_marks|floatformat >= 23 %}
+                                                        {% if i.assessment_marks >= 45 and i.ut_marks >= 23 %}
                                                             <span class="badge badge-success">Pass</span>
                                                         {% else %}
                                                             <span class="badge badge-danger">Fail</span>
                                                         {% endif %}
+
                                                     </td>
                                                 </tr>
                                                 {% endfor %}

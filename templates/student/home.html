@@ -27,11 +27,16 @@
                 </div>
 
                 <div class="card-body text-center">
-                    {% if student_obj.admin.profile_pic %}
-                        <img src="{{ student_obj.admin.profile_pic.url }}" alt="{{ student_obj.admin.first_name }}'s Profile Picture" class="rounded-circle mb-3" width="100" />
+                   {% if student_obj.admin.profile_pic %}
+                        <img src="{{ student_obj.admin.profile_pic.url }}" 
+                            alt="{{ student_obj.admin.first_name }}'s Profile Picture" 
+                            class="rounded-circle mb-3" width="100" height="100" />
                     {% else %}
-                        <img src="{% static 'img/default-profile.png' %}" alt="Default Profile Picture" class="rounded-circle mb-3" width="100" />
+                        <img src="{% static 'img/default-profile.png' %}" 
+                            alt="Default Profile Picture" 
+                            class="rounded-circle mb-3" width="100" height="100" />
                     {% endif %}
+
                     <p><strong>Name:</strong> {{ student_obj.admin.first_name }} {{ student_obj.admin.last_name }}</p>
                     <p><strong>Email:</strong> {{ student_obj.admin.email }}</p>
                     <p><strong>Address:</strong> {{ student_obj.address }}</p>

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from app.models import staff, course, subject, student,CustomUser,result,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report
+from app.models import staff, course, subject, student,CustomUser,result,staff_leave,staff_notification,staff_feedback,session_year,attendance,attendance_report,LeaveType
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
@@ -43,20 +43,20 @@ def Staff_mark_as_done(request,status):
 
 @login_required(login_url='/')
 def Staff_apply_leave(request):
-    
     staff_obj = staff.objects.filter(admin=request.user.id)
     for i in staff_obj:
         staff_id = i.id
-    
-    
-    staff_leave_obj = staff_leave.objects.filter(staff_id=staff_id) # Gets the first record or None
-    
-    
+
+    staff_leave_obj = staff_leave.objects.filter(staff_id=staff_id)
+
+    leave_types = LeaveType.objects.all()  # get all leave types
 
     context = {
         'staff_leave_obj': staff_leave_obj,
+        'leave_types': leave_types,  # pass to template
     }
     return render(request, 'Staff/apply_leave.html', context)
+
 
 @login_required(login_url='/')
 def Staff_apply_leave_save(request):
@@ -64,18 +64,31 @@ def Staff_apply_leave_save(request):
         leave_start_date = request.POST.get('leave_start_date')
         leave_end_date = request.POST.get('leave_end_date')
         reason = request.POST.get('reason')
+        leave_type_id = request.POST.get('leave_type')
 
         staff_obj = staff.objects.get(admin=request.user.id)
+
+        # Fetch LeaveType object or handle if not found
+        leave_type_obj = None
+        if leave_type_id:
+            try:
+                leave_type_obj = LeaveType.objects.get(id=leave_type_id)
+            except LeaveType.DoesNotExist:
+                messages.error(request, "Selected leave type does not exist.")
+                return redirect('staff_apply_leave')
+
         staff_leave_obj = staff_leave(
             staff_id=staff_obj,
             leave_start_date=leave_start_date,
             leave_end_date=leave_end_date,
-            leave_message=reason
+            leave_message=reason,
+            leave_type=leave_type_obj,
         )
         staff_leave_obj.save()
         messages.success(request, "Leave applied successfully")
         return redirect('staff_apply_leave')
     return None
+
 
 @login_required(login_url='/')
 def Staff_feedback(request ):
@@ -181,39 +194,55 @@ def view_attendance(request):
     get_subject = None
     get_session = None
     attendance_date = None
-    attendance_report_obj = None
-    if action is not None:
-        if request.method == 'POST':
-            subject_id = request.POST.get('subject_id')
-            session_id = request.POST.get('session_id')
-            attendance_date = request.POST.get('attendance_date')
+    student_status_list = []
 
-            get_subject = subject.objects.get(id=subject_id)
-            get_session = session_year.objects.get(id=session_id)
+    if action is not None and request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        session_id = request.POST.get('session_id')
+        attendance_date = request.POST.get('attendance_date')
 
-            attendance_obj = attendance.objects.filter(
-                subject_id=get_subject,
-                attendance_date=attendance_date,
-                session_year_id=get_session,
-                
-            )
-            for i in attendance_obj:
-                attendance_id = i.id
-                attendance_report_obj = attendance_report.objects.filter(attendance_id=attendance_id)
-           
+        get_subject = subject.objects.get(id=subject_id)
+        get_session = session_year.objects.get(id=session_id)
 
-           
+        attendance_qs = attendance.objects.filter(
+            subject_id=get_subject,
+            session_year_id=get_session,
+            attendance_date=attendance_date
+        )
 
-    context= {
+        students = student.objects.filter(
+            course_id=get_subject.course_id,
+            session_year_id=get_session
+        )
+
+        for stu in students:
+            status = "Absent"
+            for att in attendance_qs:
+                report = attendance_report.objects.filter(
+                    attendance_id=att,
+                    student_id=stu
+                ).first()
+                if report:
+                    status = "Present" if report.is_present else "Absent"
+                    break  # No need to check more if found
+            student_status_list.append({
+                'student': stu,
+                'status': status
+            })
+
+    context = {
         'subject_obj': subject_obj,
         'session_year_obj': session_year_obj,
         'action': action,
         'get_subject': get_subject,
         'get_session': get_session,
         'attendance_date': attendance_date,
-        'attendance_report_obj': attendance_report_obj ,
+        'student_status_list': student_status_list
     }
     return render(request, 'Staff/view_attendance.html', context)
+
+
+
 
 def add_result(request):
     staff_obj = staff.objects.filter(admin=request.user.id)

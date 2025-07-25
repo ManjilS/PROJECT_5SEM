@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 
-from app.models import course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report
+from app.models import course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report,LeaveType
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
 
@@ -150,7 +150,6 @@ def edit_student(request,id):
     return render(request, 'Hod/edit_student.html',context)
 @login_required(login_url='/')
 def update_student(request):
-    
     if request.method == 'POST':
         student_id = request.POST.get('student_id')
         profile_pic = request.FILES.get('profile_pic')
@@ -171,27 +170,27 @@ def update_student(request):
         user.last_name = last_name
         user.email = email
         user.username = username
-        
-        if password != " ":
+
+        if password:  # Only update if a new password is provided
             user.set_password(password)
-        if profile_pic != " ":
+
+        if profile_pic:  # Only update if a new profile picture is uploaded
             user.profile_pic = profile_pic
 
         user.save()
-        student_obj = student.objects.get(id=student_id)
+
         student_obj.address = address
         student_obj.phone_number = phone_number
-        student_obj.gender=gender
-        courses= course.objects.get(id=selected_course_id)
-        student_obj.course_id=courses
-        session_years= session_year.objects.get(id=selected_session_year_id)
-        student_obj.session_year_id=session_years
-
+        student_obj.gender = gender
+        student_obj.course_id = course.objects.get(id=selected_course_id)
+        student_obj.session_year_id = session_year.objects.get(id=selected_session_year_id)
         student_obj.save()
+
         messages.success(request, 'Student updated successfully')
         return redirect('view_student')
 
     return render(request, 'Hod/edit_student.html')
+
 
 @login_required(login_url='/')
 def delete_student(request, admin):
@@ -575,6 +574,26 @@ def view_staff_leave(request):
         'staff_leave_obj': staff_leave_obj,
     }
     return render(request, 'Hod/view_staff_leave.html',context)
+
+
+@login_required(login_url='/')
+def add_leave_type(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if name:
+            LeaveType.objects.create(name=name)
+            messages.success(request, "Leave type added successfully")
+        return redirect('add_leave_type')
+    
+    leave_types = LeaveType.objects.all()
+    return render(request, 'HOD/add_leave_type.html', {'leave_types': leave_types})
+
+@login_required(login_url='/')
+def delete_leave_type(request, id):
+    LeaveType.objects.filter(id=id).delete()
+    messages.success(request, "Leave type deleted")
+    return redirect('add_leave_type')
+
 
 @login_required(login_url='/')
 def staff_approve_leave(request, id):

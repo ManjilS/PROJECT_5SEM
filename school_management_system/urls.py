@@ -109,4 +109,7 @@ urlpatterns = [
 
     path('Hod/view_attendance/',Hod_Views.view_attendance,name='hod_view_attendance'),
     path('Hod/view_result/',Hod_Views.view_result,name='hod_view_result'),
+
+    path('Hod/add-leave-type/', Hod_Views.add_leave_type, name='add_leave_type'),
+    path('Hod/delete-leave-type/<int:id>/', Hod_Views.delete_leave_type, name='delete_leave_type'),
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -21,37 +21,50 @@
     <div class="col-sm-12">
         <div class="card">
             <div class="card-body">
-                {%include 'includes/messages.html' %}
-             <form method="POST" action="{% url 'staff_apply_leave_save' %}">
-                {% csrf_token %}
-                <div class="row">
-                    <div class="col-12">
-                    <h5 class="form-title"><span>Leave Information</span></h5>
-                 </div>
+                {% include 'includes/messages.html' %}
+                <form method="POST" action="{% url 'staff_apply_leave_save' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="form-title"><span>Leave Information</span></h5>
+                        </div>
                         <div class="col-12 col-sm-6">
                             <div class="form-group">
                                 <label>Leave Start Date</label>
                                 <input type="date" class="form-control" name="leave_start_date" required>
                             </div>
                         </div>
-                <div class="col-12 col-sm-6">
-                <div class="form-group">
-                <label>Leave End Date</label>
-                <input type="date" class="form-control" name="leave_end_date" required>
-                </div>
-                </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label>Leave End Date</label>
+                                <input type="date" class="form-control" name="leave_end_date" required>
+                            </div>
+                        </div>
 
-                <div class="col-12 col-sm-6">
-                <div class="form-group">
-                <label>Reason</label>
-                <textarea class="form-control" name="reason" rows="4" placeholder ="Leave your reason here ! " required></textarea>
-                </div>
-                </div>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label>Leave Type</label>
+                                <select class="form-control" name="leave_type" required>
+                                    <option value="">Select Leave Type</option>
+                                    {% for lt in leave_types %}
+                                        <option value="{{ lt.id }}">{{ lt.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
 
-                <div class="col-12">
-                <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
-             </form>
+                        <div class="col-12 col-sm-6">
+                            <div class="form-group">
+                                <label>Reason</label>
+                                <textarea class="form-control" name="reason" rows="4" placeholder="Leave your reason here!" required></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
