@@ -1,142 +1,172 @@
 {% extends 'base.html' %}
-{% block content%}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Add Student</title>
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      margin: 0;
-      padding: 40px;
-    }
+{% block content %}
+<style>
+  .form-select {
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #fff;
+  }
 
-    .container {
-      max-width: 600px;
-      background: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      margin: auto;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
+  .form-select:focus {
+    border-color: #ffa500;
+    box-shadow: 0 0 0 0.25rem rgba(255, 165, 0, 0.25);
+    outline: none;
+  }
 
-    h2 {
-      margin-bottom: 20px;
-      font-size: 20px;
-      color: #333;
-    }
+  .form-label {
+    font-weight: 500;
+    color: #333;
+  }
+</style>
 
-    label {
-      display: block;
-      margin: 15px 0 5px;
-      font-weight: 500;
-    }
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg border-0">
+        <div class="card-header text-white text-center" style="background-color: orange;">
+          <h4 class="mb-0">Add Staff</h4>
+        </div>
+        <div class="card-body p-4">
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
 
-    input[type="text"],
-    input[type="email"],
-    input[type="file"] {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+          <form method="POST" action="{% url 'add_staff' %}" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
 
-    input[type="email"]:disabled {
-      background-color: #e9ecef;
-      color: #666;
-    }
-    input[type="text"]#address {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
+            <div class="mb-3">
+              <label class="form-label">Profile Picture</label>
+              <input type="file" class="form-control" name="profile_pic" id="profile_pic" accept="image/*" required>
+              <div class="invalid-feedback" id="pic-error"></div>
+            </div>
 
-    select#gender {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      background-color: #fff;
-    }
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" class="form-control" name="first_name" id="first_name" required>
+                <div class="invalid-feedback" id="first-name-error"></div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" class="form-control" name="last_name" id="last_name" required>
+                <div class="invalid-feedback" id="last-name-error"></div>
+              </div>
+            </div>
 
-    select#course {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-        background-color: #fff;
-      }
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" name="email" required>
+            </div>
 
-      select#session_year {
-        width: 100%;
-        padding: 10px 12px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-        background-color: #fff;
-      }
-  </style>
-</head>
-<body>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" required>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Password</label>
+                <input type="text" class="form-control" name="password" required>
+              </div>
+            </div>
 
-  <div class="container">
-    <h2>Add Staff</h2>
-    {% include 'includes/messages.html' %}
-    <form method="POST" action="{% url 'add_staff' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-      <label for="profile_pic">Profile Pic</label>
-      <input type="file" id="profile-pic" name="profile_pic">
+            <div class="mb-3">
+              <label class="form-label">Address</label>
+              <input type="text" class="form-control" name="address" required>
+            </div>
 
-      <label for="first-name">First Name</label>
-      <input type="text" id="first_name" name="first_name" required>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number</label>
+                <input type="text" class="form-control" name="phone_number" required>
+              </div>
+              <div class="col-md-6 mb-3 mt-4">
+                <label class="form-label">Gender</label>
+                <select class="form-select" name="gender" required>
+                  <option selected disabled>Select Gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Others</option>
+                </select>
+              </div>
+            </div>
 
-      <label for="last-name">Last Name</label>
-      <input type="text" id="last_name" name="last_name" required>
-
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
-
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required>
-
-      <label for="password">Password</label>
-      <input type="text" id="password" name="password" required>
-      
-      <label for="address">Address</label>
-      <input type="text" id="address" name="address" required>
-
-      <label for="phone_number">Phone Number</label>
-      <input type="text" id="phone_number" name="phone_number" required>
-
-        <label for="gender">Gender</label>
-        <select id="gender" name="gender" required>
-            <option>Select Gender </option>
-            <option>Male</option>
-            <option>Female</option>
-            <option>Others</option>
-        </select>
-
-        
-        
-
-        
-    <button type="submit" style="margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
-      Add Staff
-    </button>
-    </form>
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary btn-lg">Add Staff</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-</body>
-</html>
+<!-- Client-side validation like student form -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('form');
+    const firstName = document.getElementById('first_name');
+    const lastName = document.getElementById('last_name');
+    const profilePic = document.getElementById('profile_pic');
 
+    const nameRegex = /^[A-Za-z].*/;
 
-{%endblock%}
+    function validateName(field, errorDiv) {
+      if (!nameRegex.test(field.value.trim())) {
+        field.classList.add('is-invalid');
+        errorDiv.textContent = 'Name must start with an alphabet letter.'; 
+        return false;
+      } else {
+        field.classList.remove('is-invalid');
+        field.classList.add('is-valid');
+        errorDiv.textContent = '';
+        return true;
+      }
+    }
+
+    function validateProfilePic() {
+      const file = profilePic.files[0];
+      const errorDiv = document.getElementById('pic-error');
+      if (!file) {
+        // required attribute handles emptiness
+        return true;
+      }
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+      if (!validTypes.includes(file.type)) {
+        profilePic.classList.add('is-invalid');
+        errorDiv.textContent = 'Only image files (jpeg, png, gif, webp) are allowed.';
+        return false;
+      }
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        profilePic.classList.add('is-invalid');
+        errorDiv.textContent = 'Image must be smaller than 5MB.';
+        return false;
+      }
+      profilePic.classList.remove('is-invalid');
+      profilePic.classList.add('is-valid');
+      errorDiv.textContent = '';
+      return true;
+    }
+
+    firstName.addEventListener('input', () => validateName(firstName, document.getElementById('first-name-error')));
+    lastName.addEventListener('input', () => validateName(lastName, document.getElementById('last-name-error')));
+    profilePic.addEventListener('change', validateProfilePic);
+
+    form.addEventListener('submit', function (e) {
+      const validFirst = validateName(firstName, document.getElementById('first-name-error'));
+      const validLast = validateName(lastName, document.getElementById('last-name-error'));
+      const validPic = validateProfilePic();
+      if (!(validFirst && validLast && validPic)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    });
+  });
+</script>
+{% endblock %}

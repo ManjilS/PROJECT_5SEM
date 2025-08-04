@@ -3,6 +3,7 @@ from app.models import TimeTable,staff, course, subject, student,CustomUser,resu
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from datetime import datetime
 
 @login_required(login_url='/')
 def Staff_home(request):
@@ -58,25 +59,50 @@ def Staff_apply_leave(request):
     return render(request, 'Staff/apply_leave.html', context)
 
 
+
+
 @login_required(login_url='/')
 def Staff_apply_leave_save(request):
     if request.method == 'POST':
-        leave_start_date = request.POST.get('leave_start_date')
-        leave_end_date = request.POST.get('leave_end_date')
-        reason = request.POST.get('reason')
+        leave_start_date_str = request.POST.get('leave_start_date')
+        leave_end_date_str = request.POST.get('leave_end_date')
+        reason = request.POST.get('reason', '').strip()
         leave_type_id = request.POST.get('leave_type')
 
-        staff_obj = staff.objects.get(admin=request.user.id)
+        # Basic validations
+        if not leave_start_date_str or not leave_end_date_str or not reason or not leave_type_id:
+            messages.error(request, "All fields are required.")
+            return redirect('staff_apply_leave')
 
-        # Fetch LeaveType object or handle if not found
-        leave_type_obj = None
-        if leave_type_id:
-            try:
-                leave_type_obj = LeaveType.objects.get(id=leave_type_id)
-            except LeaveType.DoesNotExist:
-                messages.error(request, "Selected leave type does not exist.")
-                return redirect('staff_apply_leave')
+        try:
+            leave_start_date = datetime.strptime(leave_start_date_str, '%Y-%m-%d').date()
+            leave_end_date = datetime.strptime(leave_end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect('staff_apply_leave')
 
+        if leave_start_date > leave_end_date:
+            messages.error(request, "Leave start date cannot be after end date.")
+            return redirect('staff_apply_leave')
+
+        duration_days = (leave_end_date - leave_start_date).days + 1  # inclusive of both days
+        if duration_days > 30:
+            messages.error(request, "You can only apply for leave up to 30 days.")
+            return redirect('staff_apply_leave')
+
+        try:
+            staff_obj = staff.objects.get(admin=request.user.id)
+        except staff.DoesNotExist:
+            messages.error(request, "Staff profile not found.")
+            return redirect('staff_apply_leave')
+
+        try:
+            leave_type_obj = LeaveType.objects.get(id=leave_type_id)
+        except LeaveType.DoesNotExist:
+            messages.error(request, "Selected leave type does not exist.")
+            return redirect('staff_apply_leave')
+
+        # Save the leave request
         staff_leave_obj = staff_leave(
             staff_id=staff_obj,
             leave_start_date=leave_start_date,
@@ -87,7 +113,9 @@ def Staff_apply_leave_save(request):
         staff_leave_obj.save()
         messages.success(request, "Leave applied successfully")
         return redirect('staff_apply_leave')
-    return None
+
+    return redirect('staff_apply_leave')
+
 
 
 @login_required(login_url='/')
@@ -252,18 +280,29 @@ def add_result(request):
     get_subject = None
     get_session = None
     student_obj = None
-    if action is not None:
-        if request.method == 'POST':
-            subject_id = request.POST.get('subject_id')
-            session_id = request.POST.get('session_id')
+    results = None  # For existing results to show in the table
+    
+    if action == 'get_student' and request.method == 'POST':
+        subject_id = request.POST.get('subject_id')
+        session_id = request.POST.get('session_id')
 
-            get_subject = subject.objects.get(id=subject_id)
-            get_session = session_year.objects.get(id=session_id)
+        if not subject_id or not session_id:
+            messages.error(request, "Please select both subject and session year")
+            return redirect('add_result')
 
-            subject_obj = subject.objects.filter(id=subject_id)
-            for i in subject_obj:
-                student_id = i.course_id.id
-                student_obj = student.objects.filter(course_id=student_id)
+        get_subject = subject.objects.get(id=subject_id)
+        get_session = session_year.objects.get(id=session_id)
+
+        subject_obj = subject.objects.filter(id=subject_id)
+        # Get course id from subject
+        course_id = get_subject.course_id.id
+
+        # Filter students by course and session
+        student_obj = student.objects.filter(course_id=course_id, session_year_id=session_id)
+
+        # Get existing results for this subject and session
+        results = result.objects.filter(subject_id=get_subject, student_id__in=student_obj)
+
     context = {
         'subject_obj': subject_obj,
         'session_year_obj': session_year_obj,
@@ -271,27 +310,35 @@ def add_result(request):
         'get_subject': get_subject,
         'get_session': get_session,
         'student_obj': student_obj,
-
+        'results': results,
     }
 
-    return render(request, 'Staff/add_result.html',context)
+    return render(request, 'Staff/add_result.html', context)
+
 
 def save_result(request):
     if request.method == 'POST':
         subject_id = request.POST.get('subject_id')
-        
+        session_id = request.POST.get('session_id')
         student_id = request.POST.get('student_id')
         assessment_marks = request.POST.get('assessment_marks')
         ut_marks = request.POST.get('UT_marks')
         assignment_marks = request.POST.get('assignment_marks')
 
+        # Validate input presence
+        if not all([subject_id, session_id, student_id, assessment_marks, ut_marks, assignment_marks]):
+            messages.error(request, "Please fill all required fields.")
+            return redirect('add_result')
+
         get_subject = subject.objects.get(id=subject_id)
-        
         get_student = student.objects.get(id=student_id)
+
+        # Check if result already exists for this student & subject
         check_exists = result.objects.filter(
             subject_id=get_subject,
             student_id=get_student
         ).exists()
+
         if check_exists:
             result_obj = result.objects.get(
                 subject_id=get_subject,
@@ -302,7 +349,6 @@ def save_result(request):
             result_obj.ut_marks = ut_marks
             result_obj.save()
             messages.success(request, "Result updated successfully")
-            return redirect('add_result')
         else:
             result_obj = result(
                 student_id=get_student,
@@ -313,10 +359,10 @@ def save_result(request):
             )
             result_obj.save()
             messages.success(request, "Result saved successfully")
-            return redirect('add_result')
-            
-        
-    return None
+
+        return redirect('add_result')
+
+    return redirect('add_result')
 
 
 

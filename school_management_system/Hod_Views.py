@@ -1,6 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
+import re
+import os
+import pandas as pd
+import json
 from app.models import TimeTable,course, session_year, result,staff_leave,student,CustomUser,staff,subject,staff_notification,staff_feedback,student_notification,student_feedback,student_leave,attendance, attendance_report,LeaveType
 from django.contrib import messages
 from django.shortcuts import get_object_or_404
@@ -48,72 +53,116 @@ def myprofile(request):
     }
     return render(request, 'Hod/myprofile.html', context)
 
+NAME_REGEX = re.compile(r'^[A-Za-z]')
+
+ALLOWED_IMAGE_MIME = {'image/jpeg', 'image/png', 'image/gif', 'image/webp'}
+ALLOWED_EXT = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+
 @login_required(login_url='/')
 def add_student(request):
-    
     courses = course.objects.all()
     session_years = session_year.objects.all()
 
     if request.method == 'POST':
         profile_pic = request.FILES.get('profile_pic')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        username = request.POST.get('username')
-        password = request.POST.get('password') 
-        phone_number = request.POST.get('phone_number')
-        address = request.POST.get('address')
-        gender = request.POST.get('gender') 
-        selected_course_id = request.POST.get('course')  
+        first_name = (request.POST.get('first_name') or '').strip()
+        last_name = (request.POST.get('last_name') or '').strip()
+        email = (request.POST.get('email') or '').lower().strip()
+        username = (request.POST.get('username') or '').lower().strip()
+        password = request.POST.get('password') or ''
+        phone_number = request.POST.get('phone_number') or ''
+        address = request.POST.get('address') or ''
+        gender = request.POST.get('gender') or ''
+        selected_course_id = request.POST.get('course')
         selected_session_year_id = request.POST.get('session_year')
 
-        # Normalize email
-        email = email.lower().strip()
+        # Basic validations
+        if not first_name or not NAME_REGEX.match(first_name):
+            messages.error(request, 'First name must start with an alphabet letter.')
+            return redirect('add_student')
 
-        # Validate unique fields
-       
+        if not last_name or not NAME_REGEX.match(last_name):
+            messages.error(request, 'Last name  must start with an alphabet letter.')
+            return redirect('add_student')
+
+        if not email:
+            messages.error(request, 'Email is required.')
+            return redirect('add_student')
+
+        if not username:
+            messages.error(request, 'Username is required.')
+            return redirect('add_student')
+
+        if not password:
+            messages.error(request, 'Password is required.')
+            return redirect('add_student')
+
+        if not selected_course_id or not selected_session_year_id:
+            messages.error(request, 'Course and Session Year must be selected.')
+            return redirect('add_student')
+
+        # Unique checks
         if CustomUser.objects.filter(email__iexact=email).exists():
-            messages.error(request, 'Email already exists')
-            return redirect('add_student')
-        
-        
-        # Normalize username
-        username = username.lower().strip()
-
-        if CustomUser.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists')
+            messages.error(request, 'Email already exists.')
             return redirect('add_student')
 
-        # Create user
-        user = CustomUser(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            username=username,    
-            
-            profile_pic=profile_pic,
-            user_type=3,
-        )
-        user.set_password(password)
-        user.save()
+        if CustomUser.objects.filter(username__iexact=username).exists():
+            messages.error(request, 'Username already exists.')
+            return redirect('add_student')
 
-        # Get related objects
-        selected_course = course.objects.get(id=selected_course_id)
-        selected_session_year = session_year.objects.get(id=selected_session_year_id)
+        # Profile pic validation
+        if profile_pic:
+            content_type = getattr(profile_pic, 'content_type', '')
+            name_lower = profile_pic.name.lower()
+            ext = '.' + name_lower.split('.')[-1] if '.' in name_lower else ''
+            if content_type not in ALLOWED_IMAGE_MIME or ext not in ALLOWED_EXT:
+                messages.error(request, 'Profile picture must be an image (JPEG, PNG, GIF, WEBP).')
+                return redirect('add_student')
+            if profile_pic.size > MAX_IMAGE_SIZE:
+                messages.error(request, 'Profile picture must be smaller than 5MB.')
+                return redirect('add_student')
+        else:
+            messages.error(request, 'Profile picture is required.')
+            return redirect('add_student')
 
-        # Create student
-        students = student(
-            admin=user,
-            address=address,
-            phone_number=phone_number,
-            gender=gender,
-            course_id=selected_course,
-            session_year_id=selected_session_year
-        )
-        students.save()
+        # At this point all validations passed; proceed to create
+        try:
+            with transaction.atomic():
+                user = CustomUser(
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    username=username,
+                    profile_pic=profile_pic,
+                    user_type=3,
+                )
+                user.set_password(password)
+                user.save()
 
+                # Fetch related objects; if invalid ID, these will throw.
+                selected_course = course.objects.get(id=selected_course_id)
+                selected_session_year = session_year.objects.get(id=selected_session_year_id)
 
-        messages.success(request, 'Student added successfully')
+                students = student(
+                    admin=user,
+                    address=address,
+                    phone_number=phone_number,
+                    gender=gender,
+                    course_id=selected_course,
+                    session_year_id=selected_session_year
+                )
+                students.save()
+
+            messages.success(request, 'Student added successfully.')
+            return redirect('add_student')
+        except course.DoesNotExist:
+            messages.error(request, 'Selected course does not exist.')
+        except session_year.DoesNotExist:
+            messages.error(request, 'Selected session year does not exist.')
+        except Exception as e:
+            messages.error(request, f'An unexpected error occurred: {str(e)}')
+
         return redirect('add_student')
 
     context = {
@@ -122,13 +171,7 @@ def add_student(request):
     }
     return render(request, 'Hod/add_student.html', context)
 
-@login_required(login_url='/')
-def add_staff(request):
-    return render(request, 'Hod/add_staff.html')
 
-@login_required(login_url='/')
-def view_staff(request):
-    return render(request, 'Hod/view_staff.html')
 
 @login_required(login_url='/')
 def VIEW_STUDENT(request):
@@ -277,54 +320,93 @@ def delete_course(request, id):
 
 
 
+NAME_REGEX = re.compile(r'^[A-Za-z]')
+ALLOWED_IMAGE_MIME = {'image/jpeg', 'image/png', 'image/gif', 'image/webp'}
+ALLOWED_EXT = {'.jpg', '.jpeg', '.png', '.gif', '.webp'}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+
 @login_required(login_url='/')
 def add_staff(request):
     if request.method == 'POST':
         profile_pic = request.FILES.get('profile_pic')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
-        username = request.POST.get('username')
-        password = request.POST.get('password') 
+        first_name = (request.POST.get('first_name') or '').strip()
+        last_name = (request.POST.get('last_name') or '').strip()
+        email = (request.POST.get('email') or '').lower().strip()
+        username = (request.POST.get('username') or '').lower().strip()
+        password = request.POST.get('password') or ''
+        phone_number = (request.POST.get('phone_number') or '').strip()
+        address = (request.POST.get('address') or '').strip()
+        gender = request.POST.get('gender') or ''
 
-        phone_number = request.POST.get('phone_number')
-        address = request.POST.get('address')
-        gender = request.POST.get('gender')
+        # Validate names
+        if not first_name or not NAME_REGEX.match(first_name):
+            messages.error(request, 'First name is required and must start with an alphabet letter.')
+            return redirect('add_staff')
+        if not last_name or not NAME_REGEX.match(last_name):
+            messages.error(request, 'Last name is required and must start with an alphabet letter.')
+            return redirect('add_staff')
 
-    # Normalize email   
-        email = email.lower().strip()
-            # Normalize username
-        username = username.lower().strip()
+        # Required fields
+        if not email:
+            messages.error(request, 'Email is required.')
+            return redirect('add_staff')
+        if not username:
+            messages.error(request, 'Username is required.')
+            return redirect('add_staff')
+        if not password:
+            messages.error(request, 'Password is required.')
+            return redirect('add_staff')
 
+        # Unique checks
         if CustomUser.objects.filter(email__iexact=email).exists():
-            messages.error(request, 'Email already exists')
+            messages.error(request, 'Email already exists.')
             return redirect('add_staff')
-        if CustomUser.objects.filter(username=username).exists():
-            messages.error(request, 'Username already exists')
+        if CustomUser.objects.filter(username__iexact=username).exists():
+            messages.error(request, 'Username already exists.')
             return redirect('add_staff')
-        
-    
-        user=CustomUser(
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            username=username,    
-            
-            profile_pic=profile_pic,
-            user_type=2,
-        )
-        user.set_password(password)
-        user.save()
 
-        staff_obj=staff(
-            admin=user,
-            address=address,
-            phone_number=phone_number,
-            gender=gender
-        )
-        staff_obj.save()
-        messages.success(request, 'Staff added successfully')
-        return redirect('add_staff')
+        # Profile pic validation
+        if profile_pic:
+            content_type = getattr(profile_pic, 'content_type', '')
+            name_lower = profile_pic.name.lower()
+            ext = '.' + name_lower.split('.')[-1] if '.' in name_lower and '.' in profile_pic.name else ''
+            if content_type not in ALLOWED_IMAGE_MIME or ext not in ALLOWED_EXT:
+                messages.error(request, 'Profile picture must be an image (JPEG, PNG, GIF, WEBP).')
+                return redirect('add_staff')
+            if profile_pic.size > MAX_IMAGE_SIZE:
+                messages.error(request, 'Profile picture must be smaller than 5MB.')
+                return redirect('add_staff')
+        else:
+            messages.error(request, 'Profile picture is required.')
+            return redirect('add_staff')
+
+        # All validations passed; create user and staff
+        try:
+            with transaction.atomic():
+                user = CustomUser(
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    username=username,
+                    profile_pic=profile_pic,
+                    user_type=2,  # assuming 2 is staff
+                )
+                user.set_password(password)
+                user.save()
+
+                staff_obj = staff(
+                    admin=user,
+                    address=address,
+                    phone_number=phone_number,
+                    gender=gender
+                )
+                staff_obj.save()
+
+            messages.success(request, 'Staff added successfully.')
+            return redirect('add_staff')
+        except Exception as e:
+            messages.error(request, f'Unexpected error: {str(e)}')
+            return redirect('add_staff')
 
     return render(request, 'Hod/add_staff.html')
 
@@ -824,3 +906,199 @@ def add_timetable(request):
         'timetables': TimeTable.objects.all().order_by('day', 'start_time'),
     }
     return render(request, 'Hod/add_timetable.html', context)
+
+
+def name_valid(s):
+    return isinstance(s, str) and s.strip() and s.strip()[0].isalpha()
+
+ALLOWED_EXT = {'.csv', '.xls', '.xlsx'}
+
+import os
+import json
+import pandas as pd
+from django.conf import settings
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.db import transaction
+
+ALLOWED_EXT = ['.csv', '.xlsx']  # your allowed extensions
+
+def bulk_upload_students(request):
+    preview_rows = []
+
+    if request.method == 'POST' and 'preview' in request.POST:
+        uploaded = request.FILES.get('file')
+        if not uploaded:
+            messages.error(request, "No file uploaded.")
+            return redirect('bulk_upload_students')
+
+        ext = os.path.splitext(uploaded.name)[1].lower()
+        if ext not in ALLOWED_EXT:
+            messages.error(request, "Unsupported file type.")
+            return redirect('bulk_upload_students')
+
+        # Save uploaded file to static/templates folder
+        save_dir = os.path.join(settings.BASE_DIR, 'static', 'templates')
+        os.makedirs(save_dir, exist_ok=True)
+        save_path = os.path.join(save_dir, uploaded.name)
+        with open(save_path, 'wb+') as destination:
+            for chunk in uploaded.chunks():
+                destination.write(chunk)
+
+        # Read file into dataframe
+        try:
+            if ext == '.csv':
+                df = pd.read_csv(save_path)
+            else:
+                df = pd.read_excel(save_path)
+        except Exception as e:
+            messages.error(request, f"Failed to read file: {str(e)}")
+            return redirect('bulk_upload_students')
+
+        required_cols = [
+            'first_name', 'last_name', 'email', 'username', 'password',
+            'address', 'phone_number', 'gender', 'course_id', 'session_year_id'
+        ]
+        missing = [c for c in required_cols if c not in df.columns]
+        if missing:
+            messages.error(request, f"Missing required columns: {', '.join(missing)}")
+            return redirect('bulk_upload_students')
+
+        for idx, row in df.iterrows():
+            first = str(row.get('first_name', '')).strip()
+            last = str(row.get('last_name', '')).strip()
+            email = str(row.get('email', '')).lower().strip()
+            username = str(row.get('username', '')).lower().strip()
+            password = str(row.get('password', ''))
+            address = str(row.get('address', '')).strip()
+            phone = str(row.get('phone_number', '')).strip()
+            gender = str(row.get('gender', '')).strip()
+            course_id = row.get('course_id')
+            session_id = row.get('session_year_id')
+
+            error = None
+            course_display = course_id
+            session_display = session_id
+
+            try:
+                course_obj = course.objects.get(id=course_id)
+                course_display = course_obj.course_name
+            except Exception:
+                error = "Invalid course"
+
+            try:
+                session_obj = session_year.objects.get(id=session_id)
+                session_display = f"{session_obj.session_start_year}-{session_obj.session_end_year}"
+            except Exception:
+                error = (error + "; Invalid session") if error else "Invalid session"
+
+            # Add your name_valid() function or replace this check accordingly
+            def name_valid(name):
+                import re
+                return re.match(r'^[A-Za-z]', name) is not None
+
+            if not all([first, last, email, username, password, address, phone, gender, course_id, session_id]):
+                error = (error + "; Missing field(s)") if error else "Missing required field(s)"
+            if not name_valid(first) or not name_valid(last):
+                error = (error + "; Name must start with letter") if error else "Name must start with letter"
+            if CustomUser.objects.filter(email__iexact=email).exists():
+                error = (error + "; Email exists") if error else "Email exists"
+            if CustomUser.objects.filter(username__iexact=username).exists():
+                error = (error + "; Username exists") if error else "Username exists"
+
+            row_data = {
+                'first_name': first,
+                'last_name': last,
+                'email': email,
+                'username': username,
+                'password': password,
+                'address': address,
+                'phone_number': phone,
+                'gender': gender,
+                'course_id': course_id,
+                'session_year_id': session_id,
+                'course_display': course_display,
+                'session_display': session_display,
+                'error': error,
+            }
+            row_data['serialized'] = json.dumps(row_data)
+            preview_rows.append(row_data)
+
+        request.session['preview_rows'] = [r['serialized'] for r in preview_rows]
+
+    return render(request, 'Hod/bulk_upload_students.html', {
+        'preview_rows': preview_rows,
+    })
+
+
+def bulk_upload_confirm(request):
+    if request.method != 'POST':
+        return redirect('bulk_upload_students')
+
+    serialized_list = request.session.get('preview_rows', [])
+    if not serialized_list:
+        messages.error(request, "No previewed data to import.")
+        return redirect('bulk_upload_students')
+
+    success = 0
+    failures = []
+
+    for serialized in serialized_list:
+        try:
+            row = json.loads(serialized)
+        except Exception:
+            failures.append("Failed to decode row.")
+            continue
+
+        if row.get('error'):
+            failures.append(f"Row {row.get('email')}: {row.get('error')}")
+            continue
+
+        first = row['first_name']
+        last = row['last_name']
+        email = row['email']
+        username = row['username']
+        password = row['password']
+        address = row['address']
+        phone = row['phone_number']
+        gender = row['gender']
+        course_id = row['course_id']
+        session_id = row['session_year_id']
+
+        try:
+            with transaction.atomic():
+                user = CustomUser(
+                    first_name=first,
+                    last_name=last,
+                    email=email,
+                    username=username,
+                    user_type=3,
+                )
+                user.set_password(password)
+                user.save()
+
+                student_obj = student(
+                    admin=user,
+                    address=address,
+                    phone_number=phone,
+                    gender=gender,
+                    course_id=course.objects.get(id=course_id),
+                    session_year_id=session_year.objects.get(id=session_id)
+                )
+                student_obj.save()
+                success += 1
+        except Exception as e:
+            failures.append(f"{email}: {str(e)}")
+
+    # clear preview session
+    request.session.pop('preview_rows', None)
+
+    msg = f"{success} students imported."
+    if failures:
+        msg += f" {len(failures)} failed."
+        for f in failures[:5]:
+            messages.error(request, f)
+        if len(failures) > 5:
+            messages.error(request, f"...and {len(failures)-5} more errors.")
+    messages.success(request, msg)
+    return redirect('bulk_upload_students')

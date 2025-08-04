@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from app.models import TimeTable,course, session_year, student,CustomUser,staff,result,subject,student_notification,student_feedback,student_leave,attendance,attendance_report
 from django.contrib import messages
 from datetime import date
+from datetime import datetime
 
 
 def Student_home(request):
@@ -82,23 +83,75 @@ def Student_leave(request):
     }
     return render(request, 'Student/student_leave.html', context)
 
+
+
 def Student_leave_save(request):
     if request.method == 'POST':
-        leave_start_date = request.POST.get('leave_start_date')
-        leave_end_date = request.POST.get('leave_end_date')
-        reason = request.POST.get('reason')
+        leave_start_date_str = request.POST.get('leave_start_date')
+        leave_end_date_str = request.POST.get('leave_end_date')
+        reason = request.POST.get('reason', '').strip()
 
-        student_obj = student.objects.get(admin=request.user.id)
+        # Basic validation for empty inputs
+        if not leave_start_date_str or not leave_end_date_str or not reason:
+            messages.error(request, "All fields are required.")
+            return redirect('student_leave')
+
+        try:
+            leave_start_date = datetime.strptime(leave_start_date_str, '%Y-%m-%d').date()
+            leave_end_date = datetime.strptime(leave_end_date_str, '%Y-%m-%d').date()
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            return redirect('student_leave')
+
+        if leave_start_date > leave_end_date:
+            messages.error(request, "Leave start date cannot be after leave end date.")
+            return redirect('student_leave')
+
+        try:
+            student_obj = student.objects.get(admin=request.user.id)
+        except student.DoesNotExist:
+            messages.error(request, "Student profile not found.")
+            return redirect('student_leave')
+
+        # Get session year boundaries
+        session_year = student_obj.session_year_id  # Assuming this is the related session year object
+        try:
+            # If session_start_year and session_end_year are date fields, use them directly
+            if hasattr(session_year, 'session_start_year') and hasattr(session_year, 'session_end_year'):
+                session_start_date = session_year.session_start_year
+                session_end_date = session_year.session_end_year
+            else:
+                # Fallback: parse as integers and create date objects
+                session_start_year = int(session_year.session_start_year)
+                session_end_year = int(session_year.session_end_year)
+                session_start_date = datetime(session_start_year, 1, 1).date()
+                session_end_date = datetime(session_end_year, 12, 31).date()
+        except Exception:
+            messages.error(request, "Invalid session year data.")
+            return redirect('student_leave')
+
+        if leave_start_date < session_start_date or leave_end_date > session_end_date:
+            messages.error(
+                request,
+                f"Leave dates must be within your session year: {session_start_date} - {session_end_date}."
+            )
+            return redirect('student_leave')
+
+        # All good, save the leave
         student_leave_obj = student_leave(
             student_id=student_obj,
-            leave_start_date=leave_start_date, 
+            leave_start_date=leave_start_date,
             leave_end_date=leave_end_date,
-            leave_message=reason
+            leave_message=reason,
+            leave_status=0  # Assuming 0 means Pending
         )
         student_leave_obj.save()
-        messages.success(request, "Leave applied successfully")
+        messages.success(request, "Leave applied successfully.")
         return redirect('student_leave')
-    return None
+
+    # If not POST, redirect to leave form or some page
+    return redirect('student_leave')
+
 def Student_feedback(request ):
 
     student_id= student.objects.get(admin=request.user.id)

@@ -118,5 +118,12 @@ urlpatterns = [
 
 
     path('Hod/add_timetable/', Hod_Views.add_timetable, name='add_timetable'),
+
+
+# bulk student upload
+    path('Hod/bulk_student_upload/', Hod_Views.bulk_upload_students, name='bulk_upload_students'),
+    path('Hod/bulk_student_confirm/', Hod_Views.bulk_upload_confirm, name='bulk_upload_confirm'),
+
+    
     
 ] + static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
