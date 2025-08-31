@@ -368,8 +368,8 @@ def save_result(request):
 
 def staff_view_timetable(request):
     try:
-        staff_id = staff.objects.get(admin=request.user.id)
-        timetable = TimeTable.objects.filter(staff_id=staff_id)
+        staff_obj = staff.objects.get(admin=request.user.id)
+        timetable = TimeTable.objects.filter(staff=staff_obj).order_by('day', 'start_time')
     except staff.DoesNotExist:
         timetable = []
     return render(request, 'Staff/view_timetable.html', {'timetable': timetable})

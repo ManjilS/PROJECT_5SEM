@@ -215,25 +215,30 @@ def student_view_result(request):
     return render(request, 'Student/student_view_result.html', context)
 
 def student_view_timetable(request):
-    # Get the Student instance for the logged-in user
-    student_instance = student.objects.get(admin=request.user.id)
+    try:
+        student_instance = student.objects.get(admin=request.user.id)
+        course_id = student_instance.course_id
+        session_id = student_instance.session_year_id
 
-    course_id = student_instance.course_id
-    session_id = student_instance.session_year_id
+        day_selected = request.GET.get('day')
+        if not day_selected:
+            day_selected = date.today().strftime("%A")
 
-    day_selected = request.GET.get('day')
-    if not day_selected:
-        day_selected = date.today().strftime("%A")  # e.g., 'Monday'
+        timetable = TimeTable.objects.filter(
+            course=course_id,
+            session_year=session_id,
+            day=day_selected
+        ).order_by('start_time')
 
-    timetable = TimeTable.objects.filter(
-        course_id=course_id,
-        session_year_id=session_id,
-        day=day_selected
-    )
-
-    context = {
-        'timetable': timetable,
-        'day_selected': day_selected,
-        'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-    }
+        context = {
+            'timetable': timetable,
+            'day_selected': day_selected,
+            'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        }
+    except student.DoesNotExist:
+        context = {
+            'timetable': [],
+            'day_selected': 'Monday',
+            'days': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+        }
     return render(request, 'Student/view_timetable.html', context)

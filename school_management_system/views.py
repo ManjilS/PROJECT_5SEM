@@ -16,9 +16,16 @@ def doLogin(request):
     if request.method == 'POST':
         username = request.POST.get('email')
         password = request.POST.get('password')
+        selected_role = request.POST.get('user_role')
+        
         user = EmailBackend.authenticate(request, username=username, password=password)
         
         if user is not None:
+            # Check if selected role matches user's actual role
+            if str(user.user_type) != selected_role:
+                messages.error(request, 'Invalid role selection for this account')
+                return redirect('login')
+            
             auth_login(request, user)  
             user_type = user.user_type
             if user_type == '1':
@@ -31,7 +38,7 @@ def doLogin(request):
                 messages.error(request, 'Invalid user type')
                 return redirect('login')
         else:
-            messages.error(request, 'Invalid user type')
+            messages.error(request, 'Invalid email or password')
             return redirect('login')
 
 def doLogout(request):

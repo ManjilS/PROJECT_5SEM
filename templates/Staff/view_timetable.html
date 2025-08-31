@@ -12,29 +12,29 @@
                 <table class="table table-bordered table-striped table-hover align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>Day</th>
-                            <th>Course</th>
-                            <th>Subject</th>
-                            <th>Start Time</th>
-                            <th>End Time</th>
+                            <th><i class="fas fa-calendar-day me-1"></i>Day</th>
+                            <th><i class="fas fa-graduation-cap me-1"></i>Course</th>
+                            <th><i class="fas fa-book me-1"></i>Subject</th>
+                            <th><i class="fas fa-clock me-1"></i>Start Time</th>
+                            <th><i class="fas fa-hourglass-end me-1"></i>End Time</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for row in timetable %}
                         <tr>
-                            <td><i class="fas fa-calendar-day me-1 text-primary"></i>{{ row.day }}</td>
+                            <td><span class="badge bg-primary">{{ row.day }}</span></td>
                             <td>{{ row.course.course_name }}</td>
                             <td>{{ row.subject.subject_name }}</td>
-                            <td>{{ row.start_time }}</td>
-                            <td>{{ row.end_time }}</td>
+                            <td><span class="text-success fw-bold">{{ row.start_time|time:"g:i A" }}</span></td>
+                            <td><span class="text-danger fw-bold">{{ row.end_time|time:"g:i A" }}</span></td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
             {% else %}
-                <div class="alert alert-warning">
-                    No timetable available.
+                <div class="alert alert-warning text-center">
+                    <i class="fas fa-info-circle me-2"></i>No timetable assigned yet. Please contact the administrator.
                 </div>
             {% endif %}
         </div>
